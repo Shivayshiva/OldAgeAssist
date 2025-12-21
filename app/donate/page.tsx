@@ -20,7 +20,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
-import { Heart, ArrowLeft, Check, Upload, Camera } from "lucide-react"
+import { Heart, ArrowLeft, Check } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 
@@ -30,17 +30,6 @@ const formSchema = z.object({
   phone: z.string().optional(),
   message: z.string().optional(),
   aadhaar: z.string().regex(/^\d{12}$/, "Aadhaar number must be 12 digits"),
-  photo: z
-    .instanceof(FileList)
-    .optional()
-    .refine(
-      (files) => !files || files.length === 0 || files[0]?.size <= 5 * 1024 * 1024,
-      "Photo must be less than 5MB"
-    )
-    .refine(
-      (files) => !files || files.length === 0 || ["image/jpeg", "image/png", "image/jpg"].includes(files[0]?.type),
-      "Photo must be a JPEG, PNG, or JPG file"
-    ),
   state: z.string().min(2, "State is required"),
   district: z.string().min(2, "District is required"),
   townVillage: z.string().min(2, "Town/Village is required"),
@@ -107,10 +96,6 @@ export default function DonatePage() {
       formData.append("district", values.district)
       formData.append("townVillage", values.townVillage)
       formData.append("pincode", values.pincode)
-
-      // if (values.photo && values.photo.length > 0) {
-      //   formData.append("photo", values.photo[0])
-      // }
 
       loadRazorpay();
 
@@ -417,52 +402,6 @@ export default function DonatePage() {
                               className="text-base resize-none"
                               {...field}
                             />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="photo"
-                      render={({ field: { value, onChange, ...fieldProps } }) => (
-                        <FormItem>
-                          <FormLabel>User Photo (Optional)</FormLabel>
-                          <FormControl>
-                            <div className="flex flex-col gap-4">
-                              <div className="flex items-center gap-4">
-                                <Input
-                                  {...fieldProps}
-                                  type="file"
-                                  accept="image/*"
-                                  className="hidden"
-                                  id="photo-upload"
-                                  onChange={(event) => {
-                                    onChange(event.target.files)
-                                  }}
-                                />
-                                <Label
-                                  htmlFor="photo-upload"
-                                  className="flex items-center gap-2 cursor-pointer bg-secondary hover:bg-secondary/80 text-secondary-foreground h-12 px-4 rounded-md transition-colors border border-input"
-                                >
-                                  <Camera className="w-5 h-5" />
-                                  <span className="text-base font-medium">Take Photo / Upload</span>
-                                </Label>
-                              </div>
-                              {value && value.length > 0 && (
-                                <div className="relative w-full max-w-[200px] aspect-video rounded-lg overflow-hidden border bg-muted">
-                                  <img
-                                    src={URL.createObjectURL(value[0])}
-                                    alt="Preview"
-                                    className="w-full h-full object-cover"
-                                  />
-                                </div>
-                              )}
-                              <p className="text-xs text-muted-foreground">
-                                Max 5MB. Formats: JPEG, PNG, JPG.
-                              </p>
-                            </div>
                           </FormControl>
                           <FormMessage />
                         </FormItem>
