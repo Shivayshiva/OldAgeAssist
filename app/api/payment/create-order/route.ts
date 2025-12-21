@@ -13,6 +13,10 @@ export async function POST(req: Request) {
     const mobile = formData.get("phone") as string;
     const aadhaarNumber = formData.get("aadhaar") as string;
     const amount = parseFloat(formData.get("amount") as string);
+    const state = formData.get("state") as string;
+    const district = formData.get("district") as string;
+    const townVillage = formData.get("townVillage") as string;
+    const pincode = formData.get("pincode") as string;
     const photoUrl = ""; // Placeholder: Implement file upload logic to get URL
     await connectDB()
 
@@ -24,6 +28,10 @@ export async function POST(req: Request) {
       mobile,
       aadhaarNumber,
       photoUrl,
+      state,
+      district,
+      townVillage,
+      pincode,
     });
   }
 
