@@ -26,6 +26,17 @@ export default function HomeClientPage() {
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-primary text-primary-foreground">
         <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary to-accent/20"></div>
+        <nav className="relative container mx-auto px-4 py-6 flex justify-between items-center">
+          <div className="font-bold text-xl">Old Age Homes Assist</div>
+          <div className="flex gap-4">
+            <Button variant="ghost" className="text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground" asChild>
+              <Link href="/login">Login</Link>
+            </Button>
+            <Button variant="secondary" asChild>
+              <Link href="/signup">Sign Up</Link>
+            </Button>
+          </div>
+        </nav>
         <div className="relative container mx-auto px-4 py-16 md:py-24 lg:py-32">
           <motion.div initial="initial" animate="animate" variants={stagger} className="max-w-4xl mx-auto text-center">
             <motion.div variants={fadeInUp} className="mb-4 md:mb-6">
