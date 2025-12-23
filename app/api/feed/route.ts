@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/authOptions"
 import { connectDB } from "@/lib/mongodb"
 import Feed from "@/models/Feed"
+import Member from "@/models/Member"
 import { z } from "zod"
 
 const feedSchema = z.object({
@@ -40,5 +41,30 @@ export async function POST(req: Request) {
   } catch (error) {
     console.error("Error creating feed post:", error)
     return NextResponse.json({ success: false, error: "Failed to create post" }, { status: 500 })
+  }
+}
+
+export async function GET(req: Request) {
+     const { searchParams } = new URL(req.url);
+  const page = Number(searchParams.get("page")) || 1;
+  const limit = 5;
+  try {
+    await connectDB()
+
+    // Ensure Member model is registered
+    const _ = Member
+
+    const feeds = await Feed.find({})
+    //   .populate("author", "profile.fullName profile.profilePhoto")
+      .populate("author")
+      .sort({ createdAt: -1 })
+      .lean()
+        .skip((page - 1) * limit)
+    .limit(limit);
+
+    return NextResponse.json({ success: true, feeds }, { status: 200 })
+  } catch (error) {
+    console.error("Error fetching feeds:", error)
+    return NextResponse.json({ success: false, error: "Failed to fetch feeds" }, { status: 500 })
   }
 }

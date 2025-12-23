@@ -16,6 +16,7 @@ interface FeedPostProps {
   likes: number
   comments: number
   timestamp: string
+  viewMode?: "grid" | "slide"
 }
 
 export default function FeedPost({
@@ -29,6 +30,7 @@ export default function FeedPost({
   likes,
   comments,
   timestamp,
+  viewMode = "grid",
 }: FeedPostProps) {
   const imageList = images || (image ? [image] : [])
 
@@ -55,7 +57,42 @@ export default function FeedPost({
         <div className="px-2 py-1 bg-primary/10 text-primary text-xs font-medium rounded-full">{category}</div>
       </div>
 
-      <ImageCarousel images={imageList} title={title} />
+      {viewMode === "grid" ? (
+        imageList.length > 0 && (
+          <div
+            className={`grid gap-0.5 ${
+              imageList.length === 1
+                ? "grid-cols-1"
+                : imageList.length === 2
+                ? "grid-cols-2"
+                : "grid-cols-2"
+            }`}
+          >
+            {imageList.slice(0, 4).map((img, index) => (
+              <div
+                key={index}
+                className={`relative ${
+                  imageList.length === 3 && index === 0 ? "row-span-2 h-full" : "aspect-square"
+                } ${imageList.length === 1 ? "aspect-video" : ""}`}
+              >
+                <GlobalImage
+                  src={img}
+                  alt={title}
+                  fill
+                  className="object-cover"
+                />
+                {index === 3 && imageList.length > 4 && (
+                  <div className="absolute inset-0 bg-black/50 flex items-center justify-center text-white font-bold text-xl">
+                    +{imageList.length - 4}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )
+      ) : (
+        <ImageCarousel images={imageList} title={title} />
+      )}
 
       {/* Post Content */}
       <div className="p-4">
