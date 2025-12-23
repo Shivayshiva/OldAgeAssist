@@ -2,7 +2,8 @@ import FeedPost from "../feed/feed-post"
 import { connectDB } from "@/lib/mongodb"
 import Feed from "@/models/Feed"
 import dynamic from "next/dynamic"
-const LoadMoreUsers = dynamic(() => import("../loadMoreFeed"))
+import LoadMoreUsers from "../loadMoreFeed"
+// const LoadMoreUsers = dynamic(() => import("../loadMoreFeed"))
 
 function formatTimeAgo(date: Date) {
   const now = new Date()
@@ -48,8 +49,8 @@ export default async function FeedPosts() {
           <FeedPost key={post.id} {...post} />
         ))}
       </div>
-      
-      <LoadMoreUsers initialPage={1}/>
+
+      <LoadMoreUsers initialPage={1} />
     </div>
   )
 }
