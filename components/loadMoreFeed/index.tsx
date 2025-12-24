@@ -25,7 +25,6 @@ export default function LoadMoreUsers({ initialPage }: { initialPage: number }) 
     setLoading(true);
     const res = await fetch(`/api/feed?page=${page + 1}`);
     const data = await res.json();
-    console.log("data_data_DATA_DATA", data)
 
      const formattedFeeds = data?.feeds?.map((feed: any) => ({
     id: feed._id.toString(),
