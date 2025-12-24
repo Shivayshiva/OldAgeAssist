@@ -3,6 +3,8 @@ import { HomeTitle } from "@/components/HomeTitle"
 import { QuickStats } from "@/components/quickStats"
 import FeedPosts from "@/components/feedpost"
 
+export const dynamic = "force-dynamic"
+
 export default function VolunteerPage() {
   return (
     <div className="min-h-screen bg-background">
