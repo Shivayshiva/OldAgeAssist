@@ -3,7 +3,10 @@
 import { useState, useMemo } from "react"
 import { Navbar } from "@/components/layout/navbar"
 import { OpportunityCard } from "@/components/opportunities/opportunity-card"
-import { Search, Filter, X } from "lucide-react"
+import { Filter, X } from "lucide-react"
+import { CommonSearch } from "@/components/ui/common-search"
+import { CommonFilterTab } from "@/components/ui/common-filter-tab"
+import { GlobalButton } from "../ui/GlobalButton"
 
 export function OpportunitiesContent() {
   const [searchQuery, setSearchQuery] = useState("")
@@ -154,79 +157,37 @@ export function OpportunitiesContent() {
   }, [searchQuery, selectedCategory, selectedDifficulty])
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
-
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-foreground mb-2">Volunteer Opportunities</h1>
-          <p className="text-muted-foreground">
-            {filteredOpportunities.length} opportunities available to make a difference
-          </p>
-        </div>
+    <>
 
         {/* Search Bar */}
         <div className="mb-8">
-          <div className="relative">
-            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-            <input
-              type="text"
-              placeholder="Search opportunities, camps, or keywords..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 border border-border rounded-lg bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-            />
-          </div>
+          <CommonSearch
+            value={searchQuery}
+            onSearch={setSearchQuery}
+            placeholder="Search opportunities, camps, or keywords..."
+            className="w-full"
+          />
         </div>
 
         {/* Filters */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           {/* Category Filter */}
-          <div>
-            <label className="block text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
-              <Filter className="w-4 h-4" />
-              Category
-            </label>
-            <div className="flex flex-wrap gap-2">
-              {categories.map((category) => (
-                <button
-                  key={category}
-                  onClick={() => setSelectedCategory(category)}
-                  className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                    selectedCategory === category || (category === "All" && !selectedCategory)
-                      ? "bg-primary text-white"
-                      : "bg-secondary text-foreground hover:bg-secondary/80"
-                  }`}
-                >
-                  {category}
-                </button>
-              ))}
-            </div>
-          </div>
+          <CommonFilterTab
+            label="Category"
+            icon={Filter}
+            items={categories}
+            selectedItem={selectedCategory}
+            onSelect={setSelectedCategory}
+          />
 
           {/* Difficulty Filter */}
-          <div>
-            <label className="block text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
-              <Filter className="w-4 h-4" />
-              Difficulty
-            </label>
-            <div className="flex flex-wrap gap-2">
-              {difficulties.map((diff) => (
-                <button
-                  key={diff}
-                  onClick={() => setSelectedDifficulty(diff)}
-                  className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                    selectedDifficulty === diff || (diff === "All" && !selectedDifficulty)
-                      ? "bg-primary text-white"
-                      : "bg-secondary text-foreground hover:bg-secondary/80"
-                  }`}
-                >
-                  {diff.charAt(0).toUpperCase() + diff.slice(1)}
-                </button>
-              ))}
-            </div>
-          </div>
+          <CommonFilterTab
+            label="Difficulty"
+            icon={Filter}
+            items={difficulties}
+            selectedItem={selectedDifficulty}
+            onSelect={setSelectedDifficulty}
+          />
         </div>
 
         {/* Active Filters Display */}
@@ -269,19 +230,17 @@ export function OpportunitiesContent() {
         ) : (
           <div className="text-center py-12">
             <p className="text-lg text-muted-foreground">No opportunities found matching your filters.</p>
-            <button
+            <GlobalButton
+              title="Reset Filters"
               onClick={() => {
                 setSearchQuery("")
                 setSelectedCategory("")
                 setSelectedDifficulty("")
               }}
-              className="mt-4 px-6 py-2 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition-colors"
-            >
-              Reset Filters
-            </button>
+              className="mt-4"
+            />
           </div>
         )}
-      </main>
-    </div>
+    </>
   )
 }
