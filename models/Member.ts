@@ -92,5 +92,4 @@ MemberSchema.index({ "auth.googleId": 1 }, { unique: true, sparse: true })
 MemberSchema.index({ "kyc.panNumber": 1 }, { unique: true, sparse: true })
 
 
-export default mongoose.models.Member ||
-  mongoose.model("Member", MemberSchema)
+export default mongoose.models.Member ||mongoose.model("Member", MemberSchema)

@@ -1,3 +1,4 @@
+"use client"
 import { ImageCarousel } from "./image-carousel"
 import GlobalImage from "../GlobalImage"
 import { ActionButton } from "./actionButton"
