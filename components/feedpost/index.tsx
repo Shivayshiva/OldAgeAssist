@@ -1,6 +1,7 @@
 import FeedPost from "../feed/feed-post"
 import { connectDB } from "@/lib/mongodb"
 import Feed from "@/models/Feed"
+import Member from "@/models/Member"
 import dynamic from "next/dynamic"
 import LoadMoreUsers from "../loadMoreFeed"
 // const LoadMoreUsers = dynamic(() => import("../loadMoreFeed"))
@@ -18,6 +19,9 @@ function formatTimeAgo(date: Date) {
 
 export default async function FeedPosts() {
   await connectDB()
+
+  // Ensure Member model is registered before populate
+  const _ = Member
 
   const feeds = await Feed.find({})
     .populate("author")
