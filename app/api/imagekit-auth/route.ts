@@ -7,6 +7,6 @@ export async function GET() {
   // Add publicKey to the response since getAuthenticationParameters() doesn't include it
   return NextResponse.json({
     ...authParams,
-    publicKey: process.env.IMAGEKIT_PUBLIC_KEY,
+    publicKey: process.env.NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY!,
   });
 }
