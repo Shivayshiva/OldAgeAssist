@@ -9,7 +9,7 @@ import Member from "@/models/Member";
 const normalizeEmail = (value?: string | null) => value?.toLowerCase().trim();
 
 export const authOptions: NextAuthOptions = {
-  pages: { signIn: "/signin" },
+  pages: { signIn: "/login" },
   session: { strategy: "jwt" },
   providers: [
     CredentialsProvider({

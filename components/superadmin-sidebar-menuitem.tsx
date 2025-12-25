@@ -33,7 +33,6 @@ const navigation = [
   { name: "Room Management", href: "/superadmin/rooms", icon: Building2 },
   { name: "Foundation Work", href: "/superadmin/foundation", icon: HandHeart },
   { name: "Reports", href: "/reports", icon: FileText },
-  { name: "Settings", href: "/settings", icon: Settings },
 ]
 
 export function SuperadminSidebarMenuitem() {

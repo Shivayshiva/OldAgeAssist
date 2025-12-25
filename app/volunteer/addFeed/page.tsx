@@ -12,6 +12,7 @@ import { useSession } from "next-auth/react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
+import { uploadToImageKit } from "@/lib/commonFunction"
 const formSchema = z.object({
   title: z.string().min(5, "Title must be at least 5 characters"),
   description: z.string().min(10, "Description must be at least 10 characters"),
@@ -69,39 +70,39 @@ export default function AddFeedPage() {
     })
   }
 
-  const uploadToImageKit = async (file: File) => {
-    // Fetch auth params from your backend
-    // Ensure you have an endpoint at /api/auth/imagekit that returns { signature, token, expire }
-    const authRes = await fetch("/api/imagekit-auth")
-    if (!authRes.ok) throw new Error("Failed to get auth params")
-    const { signature, token, expire } = await authRes.json()
+  // const uploadToImageKit = async (file: File) => {
+  //   // Fetch auth params from your backend
+  //   // Ensure you have an endpoint at /api/auth/imagekit that returns { signature, token, expire }
+  //   const authRes = await fetch("/api/imagekit-auth")
+  //   if (!authRes.ok) throw new Error("Failed to get auth params")
+  //   const { signature, token, expire } = await authRes.json()
 
-    const formData = new FormData()
-    formData.append("file", file)
-    formData.append("fileName", file.name)
-    formData.append("publicKey", process.env.NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY || "")
-    formData.append("signature", signature)
-    formData.append("expire", expire)
-    formData.append("token", token)
-    formData.append("useUniqueFileName", "true")
-    formData.append("folder", "/feed")
+  //   const formData = new FormData()
+  //   formData.append("file", file)
+  //   formData.append("fileName", file.name)
+  //   formData.append("publicKey", process.env.NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY || "")
+  //   formData.append("signature", signature)
+  //   formData.append("expire", expire)
+  //   formData.append("token", token)
+  //   formData.append("useUniqueFileName", "true")
+  //   formData.append("folder", "/feed")
 
-    const uploadRes = await fetch("https://upload.imagekit.io/api/v1/files/upload", {
-      method: "POST",
-      body: formData,
-    })
+  //   const uploadRes = await fetch("https://upload.imagekit.io/api/v1/files/upload", {
+  //     method: "POST",
+  //     body: formData,
+  //   })
 
-    if (!uploadRes.ok) throw new Error("Image upload failed")
-    const data = await uploadRes.json()
-    return data.url
-  }
+  //   if (!uploadRes.ok) throw new Error("Image upload failed")
+  //   const data = await uploadRes.json()
+  //   return data.url
+  // }
 
   const onSubmit = async (data: FormData) => {
     setLoading(true)
 
     if(session?.user?.id as string){
  try {
-      const imageUrls = await Promise.all(images.map(uploadToImageKit))
+      const imageUrls = await Promise.all(images.map((file) => uploadToImageKit(file, "/feed")))
 
       const payload={...data, images: imageUrls, viewMode}
       console.log("Create_Feeddddddddd_Post_Result", payload)
