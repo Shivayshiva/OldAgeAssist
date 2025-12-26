@@ -8,7 +8,27 @@ import { useSession, signOut } from "next-auth/react"
 
 export function HomeNavbar() {
   const [isOpen, setIsOpen] = useState(false)
-  const { status } = useSession()
+  const { data: session, status } = useSession()
+
+  // Determine home route based on user role
+  const getHomeRoute = () => {
+    if (!session?.user) return "/"
+    
+    const userRole = session.user.role || session.user.userType
+    
+    switch (userRole) {
+      case "superadmin":
+        return "/superadmin"
+      case "volunteer":
+        return "/volunteer"
+      case "donor":
+        return "/donors"
+      default:
+        return "/"
+    }
+  }
+
+  const homeRoute = getHomeRoute()
 
   return (
     <nav className="relative container mx-auto px-4 py-6">
@@ -20,7 +40,7 @@ export function HomeNavbar() {
           {status === "authenticated" ? (
             <>
               <Button variant="ghost" className="text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground" asChild>
-                <Link href="/volunteer">Home</Link>
+                <Link href={homeRoute}>Home</Link>
               </Button>
               <Button variant="secondary" onClick={() => signOut()}>
                 Sign Out
@@ -53,7 +73,7 @@ export function HomeNavbar() {
            {status === "authenticated" ? (
             <>
              <Button variant="ghost" className="text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground" asChild>
-                <Link href="/volunteer">Home</Link>
+                <Link href={homeRoute}>Home</Link>
               </Button>
             <Button variant="secondary" onClick={() => signOut()} className="w-full">
               Sign Out
