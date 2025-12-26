@@ -18,7 +18,7 @@ import {
   Calendar,
 } from "lucide-react"
 import { CustomTitle } from "@/components/ui/CustomTitle"
-import { Column, CustomTable } from "./CustomTable"
+import { Column, CustomTable } from "../../components/ui/CustomTable"
 // import { CustomTable, type Column } from "@/components/ui/CustomTable"
 
 // Mock data for charts
