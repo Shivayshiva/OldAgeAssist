@@ -5,8 +5,8 @@ import { getToken } from "next-auth/jwt"
 const protectedPaths = [
   { path: "/superadmin", roles: ["superadmin"] },
   { path: "/admin", roles: ["admin", "superadmin"] },
-  { path: "/volunteer", roles: ["admin"] },
-  { path: "/dashboard", roles: ["user", "admin", "superadmin"] },
+  { path: "/volunteer", roles: ["volunteer"] },
+  { path: "/dashboard", roles: ["user", "volunteer", "superadmin"] },
 ]
 
 const publicPaths = ["/login", "/register"]
