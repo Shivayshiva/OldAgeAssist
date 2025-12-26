@@ -5,50 +5,45 @@ import { getToken } from "next-auth/jwt"
 const protectedPaths = [
   { path: "/superadmin", roles: ["superadmin"] },
   { path: "/admin", roles: ["admin", "superadmin"] },
+  { path: "/volunteer", roles: ["admin"] },
   { path: "/dashboard", roles: ["user", "admin", "superadmin"] },
 ]
 
-const publicPaths = ["/login", "/register", "/"]
+const publicPaths = ["/login", "/register"]
 
 export async function middleware(request: NextRequest) {
   const token = await getToken({ req: request })
   const { pathname } = request.nextUrl
 
-
-  const protectedRoute = protectedPaths.find((route) =>
+  const protectedRoute = protectedPaths.find(route =>
     pathname.startsWith(route.path)
   )
 
-  // 1. Handle Unauthenticated Users on Protected Routes
+  // 🔒 Not logged in but trying protected route
   if (protectedRoute && !token) {
     const loginUrl = new URL("/login", request.url)
-    // Store the original URL to redirect back after login
     loginUrl.searchParams.set("callbackUrl", pathname)
     return NextResponse.redirect(loginUrl)
   }
 
-  // 2. Verify Token and Handle Role-Based Access
+  // 🔐 Logged in user visiting login/register
+  if (token && publicPaths.includes(pathname)) {
+    const role = token.userType as string
 
-  if (token) {
-    const userRole = token.userType as string
-
-    if (publicPaths.includes(pathname)) {
-      if (userRole === "superadmin") {
-        return NextResponse.redirect(new URL("/superadmin", request.url))
-      }
-      else if (userRole === "admin") {
-        return NextResponse.redirect(new URL("/volunteer", request.url))
-        
-      }
-      else{
-        return NextResponse.redirect(new URL("/", request.url))
-
-      }
+    if (role === "superadmin") {
+      return NextResponse.redirect(new URL("/superadmin", request.url))
+    }
+    if (role === "admin") {
+      return NextResponse.redirect(new URL("/volunteer", request.url))
     }
 
-    // Check if user has permission for the protected route
-    if (protectedRoute && !protectedRoute.roles.includes(userRole)) {
-      // User is authenticated but doesn't have the right role
+    return NextResponse.redirect(new URL("/dashboard", request.url))
+  }
+
+  // 🚫 Role mismatch
+  if (token && protectedRoute) {
+    const role = token.userType as string
+    if (!protectedRoute.roles.includes(role)) {
       return NextResponse.redirect(new URL("/unauthorized", request.url))
     }
   }
@@ -57,8 +52,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: [
-    // Match all paths except static files and APIs
-    "/((?!api|_next/static|_next/image|favicon.ico).*)",
-  ],
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
 }

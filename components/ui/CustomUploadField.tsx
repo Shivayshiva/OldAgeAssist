@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import Image from "next/image"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
@@ -31,12 +32,12 @@ export function CustomUploadField({
       <div className="flex flex-col gap-4">
         {value ? (
           <div className="relative aspect-video w-full overflow-hidden rounded-lg border">
-            <img src={value} alt="Preview" className="h-full w-full object-cover" />
+            <Image src={value} alt="Preview" fill className="object-cover" loading="lazy" />
             <Button
               type="button"
               variant="destructive"
               size="icon"
-              className="absolute right-2 top-2 size-8"
+              className="absolute right-2 top-2 size-8 z-10"
               onClick={onRemove}
             >
               <Trash2 className="size-4" />
