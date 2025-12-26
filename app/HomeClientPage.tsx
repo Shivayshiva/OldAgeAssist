@@ -181,6 +181,7 @@ export default function HomeClientPage() {
               <Heart className="ml-2 h-5 w-5 group-hover:scale-110 transition-transform" />
             </Link>
           </Button>
+          
         </motion.div>
       </section>
     </div>

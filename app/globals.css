@@ -4,7 +4,7 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --background: oklch(0.99 0.002 90);
+  --background: oklch(88.165% 0.07837 315.119 / 0);
   --googlebutton: oklch(56.764% 0.22174 28.18);
   --foreground: oklch(0.15 0.01 260);
   --card: oklch(1 0 0);
