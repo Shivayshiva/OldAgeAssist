@@ -20,15 +20,15 @@ export async function POST(req: Request) {
     console.log("Webhook headers received:", JSON.stringify(headers, null, 2));
     
     const body = await req.text();
-    console.log("Webhook body received:", body);
+    console.log("Webhook body received");
 
     const razorpaySignature =
       req.headers.get("x-razorpay-signature") || req.headers.get("X-Razorpay-Signature");
 
     // Only verify signature if VERIFY_WEBHOOK_SIGNATURE is explicitly set to "true"
-    const shouldVerifySignature = process.env.VERIFY_WEBHOOK_SIGNATURE === "true";
+    // const shouldVerifySignature = process.env.VERIFY_WEBHOOK_SIGNATURE === "true";
 
-    if (shouldVerifySignature) {
+    // if (shouldVerifySignature) {
       if (!process.env.RAZORPAY_WEBHOOK_SECRET) {
         console.error("VERIFY_WEBHOOK_SIGNATURE is enabled but RAZORPAY_WEBHOOK_SECRET is not set");
         return NextResponse.json(
@@ -61,17 +61,17 @@ export async function POST(req: Request) {
         );
       }
       console.log("Signature verified successfully");
-    } else {
-      console.warn("Webhook signature verification is DISABLED - set VERIFY_WEBHOOK_SIGNATURE=true to enable");
-    }
+    // } else {
+    //   console.warn("Webhook signature verification is DISABLED - set VERIFY_WEBHOOK_SIGNATURE=true to enable");
+    // }
 
-    const payload = await req.json();
-    console.log("Parsed webhook payload", payload);
-    const event = JSON.parse(payload);
+    const event = JSON.parse(body);
 
-    console.log("Stringified webhook payload", payload);
+    console.log("Stringified webhook payload", event);
 
     await connectDB();
+
+    console.log("connected to DB");
 
     if (event.event === "payment.captured") {
       const payment = event.payload.payment.entity;
@@ -97,12 +97,16 @@ export async function POST(req: Request) {
       donation.status = "paid";
       donation.razorpayPaymentId = razorpayPaymentId;
       donation.paymentMethod = payment.method;
+      console.log("Found Donation, updating status to paid");
       await donation.save();
+      console.log("Found Donation, updated status to paid");
+
 
       await Donor.findByIdAndUpdate(donation.donorId, {
         isDonor: true,
       });
 
+      console.log("Got donor and updated isDonor flag");
       // Generate invoice and send email
       try {
         // Populate donor details
@@ -133,7 +137,7 @@ export async function POST(req: Request) {
           taxExemptionPercentage: 50,
           status: "generated",
         });
-
+        console.log("doner_doner_doner")
         // Generate PDF
         const pdfUrl = await generateInvoicePDF({
           invoiceNumber: invoice.invoiceNumber,
@@ -153,11 +157,13 @@ export async function POST(req: Request) {
           foundationPAN: "AAATS1234F",
         });
 
+        console.log("PDF generated successfully:" );
+
         // Update invoice with PDF URL
         invoice.pdfUrl = pdfUrl;
         invoice.pdfGeneratedAt = new Date();
         await invoice.save();
-
+        console.log("Invoice record updated with PDF URL");
         // Send email if donor has email
         if (donor.email) {
           const emailSent = await sendInvoiceEmail({
@@ -175,6 +181,8 @@ export async function POST(req: Request) {
             invoice.status = "sent";
             await invoice.save();
           }
+
+          console.log("Invoice email sent to donor:", donor.email);
         }
 
         console.log("Invoice generated successfully:", invoice.invoiceNumber);
