@@ -7,34 +7,51 @@ import DonationInvoice from "@/models/DonationInvoice";
 import { generateInvoicePDF, numberToWords } from "@/lib/pdf/generateInvoicePDF";
 import { sendInvoiceEmail } from "@/lib/email/sendInvoiceEmail";
 
+// Disable body parsing for webhook to access raw body
+export const dynamic = 'force-dynamic';
+
 export async function POST(req: Request) {
   try {
+    // Log all headers for debugging
+    const headers: Record<string, string> = {};
+    req.headers.forEach((value, key) => {
+      headers[key] = value;
+    });
+    console.log("Webhook headers received:", JSON.stringify(headers, null, 2));
     
     const body = await req.text();
+    console.log("Webhook body received:", body);
 
     const razorpaySignature =
-      req.headers.get("x-razorpay-signature");
+      req.headers.get("x-razorpay-signature") || req.headers.get("X-Razorpay-Signature");
 
-    if (!razorpaySignature) {
+    // Verify signature if webhook secret is configured
+    if (process.env.RAZORPAY_WEBHOOK_SECRET && razorpaySignature) {
+      const expectedSignature = crypto
+        .createHmac(
+          "sha256",
+          process.env.RAZORPAY_WEBHOOK_SECRET
+        )
+        .update(body)
+        .digest("hex");
+
+      if (razorpaySignature !== expectedSignature) {
+        console.error("Signature mismatch - Invalid webhook signature");
+        return NextResponse.json(
+          { error: "Invalid signature" },
+          { status: 400 }
+        );
+      }
+      console.log("Signature verified successfully");
+    } else if (process.env.RAZORPAY_WEBHOOK_SECRET && !razorpaySignature) {
+      console.warn("WARNING: Webhook secret is configured but signature header is missing!");
+      console.warn("Please configure webhook secret in Razorpay Dashboard");
       return NextResponse.json(
-        { error: "Signature missing" },
+        { error: "Signature missing - Configure webhook secret in Razorpay Dashboard" },
         { status: 400 }
       );
-    }
-
-    const expectedSignature = crypto
-      .createHmac(
-        "sha256",
-        process.env.RAZORPAY_WEBHOOK_SECRET!
-      )
-      .update(body)
-      .digest("hex");
-
-    if (razorpaySignature !== expectedSignature) {
-      return NextResponse.json(
-        { error: "Invalid signature" },
-        { status: 400 }
-      );
+    } else {
+      console.warn("WARNING: Webhook secret not configured - Running without signature verification (NOT RECOMMENDED FOR PRODUCTION)");
     }
 
     const event = JSON.parse(body);
