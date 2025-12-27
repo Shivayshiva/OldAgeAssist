@@ -25,8 +25,26 @@ export async function POST(req: Request) {
     const razorpaySignature =
       req.headers.get("x-razorpay-signature") || req.headers.get("X-Razorpay-Signature");
 
-    // Verify signature if webhook secret is configured
-    if (process.env.RAZORPAY_WEBHOOK_SECRET && razorpaySignature) {
+    // Only verify signature if VERIFY_WEBHOOK_SIGNATURE is explicitly set to "true"
+    const shouldVerifySignature = process.env.VERIFY_WEBHOOK_SIGNATURE === "true";
+
+    if (shouldVerifySignature) {
+      if (!process.env.RAZORPAY_WEBHOOK_SECRET) {
+        console.error("VERIFY_WEBHOOK_SIGNATURE is enabled but RAZORPAY_WEBHOOK_SECRET is not set");
+        return NextResponse.json(
+          { error: "Webhook secret not configured" },
+          { status: 500 }
+        );
+      }
+
+      if (!razorpaySignature) {
+        console.error("Signature header missing - X-Razorpay-Signature not found");
+        return NextResponse.json(
+          { error: "Signature missing" },
+          { status: 400 }
+        );
+      }
+
       const expectedSignature = crypto
         .createHmac(
           "sha256",
@@ -43,18 +61,15 @@ export async function POST(req: Request) {
         );
       }
       console.log("Signature verified successfully");
-    } else if (process.env.RAZORPAY_WEBHOOK_SECRET && !razorpaySignature) {
-      console.warn("WARNING: Webhook secret is configured but signature header is missing!");
-      console.warn("Please configure webhook secret in Razorpay Dashboard");
-      return NextResponse.json(
-        { error: "Signature missing - Configure webhook secret in Razorpay Dashboard" },
-        { status: 400 }
-      );
     } else {
-      console.warn("WARNING: Webhook secret not configured - Running without signature verification (NOT RECOMMENDED FOR PRODUCTION)");
+      console.warn("Webhook signature verification is DISABLED - set VERIFY_WEBHOOK_SIGNATURE=true to enable");
     }
 
-    const event = JSON.parse(body);
+    const payload = await req.json();
+    console.log("Parsed webhook payload", payload);
+    const event = JSON.parse(payload);
+
+    console.log("Stringified webhook payload", payload);
 
     await connectDB();
 
