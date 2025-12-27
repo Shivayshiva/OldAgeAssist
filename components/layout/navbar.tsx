@@ -1,15 +1,17 @@
 
+"use client"
+
 import Link from "next/link"
 import { Heart, Users, Newspaper, LogOut, PlusCircle } from "lucide-react"
 import { MobileMenuButton } from "../mobileMenuButton"
 import { GlobalButton } from "../ui/GlobalButton"
+import { signOut } from "next-auth/react"
 
 
 export function Navbar() {
   const navItems = [
     { href: "/", label: "Feed", icon: Newspaper },
     { href: "/opportunities", label: "Opportunities", icon: Heart },
-    { href: "/register", label: "Register", icon: Users },
   ]
   return (
     <nav className="sticky top-0 z-50 bg-gray-100 rounded-md  border-b border-border">
@@ -46,6 +48,7 @@ export function Navbar() {
             <GlobalButton
               icon={<LogOut />}
               title="Logout"
+              onClick={() => signOut({ callbackUrl: "/" })}
               />
           </div>
 

@@ -33,9 +33,8 @@ export function HomeNavbar() {
   return (
     <nav className="relative container mx-auto px-4 py-6">
       <div className="flex justify-between items-center">
-        <div className="font-bold text-xl">Old Age Homes Assist</div>
-        
-        {/* Desktop Navigation */}
+        <div className="font-bold text-3xl">SIRSA Foundation</div>
+   
         <div className="hidden md:flex gap-4">
           {status === "authenticated" ? (
             <>

@@ -12,7 +12,7 @@ export interface Donor {
   _id: string
   amount: number
   createdAt: string
-  userId: {
+  donorId: {
     name: string
     mobile?: string
     aadhaarNumber?: string
@@ -120,18 +120,18 @@ export default function DonorsClientPage({ donors }: DonorsClientPageProps) {
                   <div className="flex items-start gap-3 md:gap-4 mb-3 md:mb-4">
                     <Avatar className="h-10 w-10 md:h-12 md:w-12 bg-primary text-primary-foreground flex-shrink-0">
                       <AvatarFallback className="text-base md:text-lg font-semibold">
-                        {getInitials(donor.userId?.name || "Anonymous")}
+                        {getInitials(donor.donorId?.name || "Anonymous")}
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex-1 min-w-0">
                       <h3 className="font-semibold text-base md:text-lg mb-1 truncate">
-                        {donor.userId?.name || "Anonymous"}
+                        {donor.donorId?.name || "Anonymous"}
                       </h3>
                       <div className="text-xs text-muted-foreground space-y-1">
-                        {donor.userId?.mobile && <p>Mobile: {donor.userId.mobile}</p>}
-                        {donor.userId?.aadhaarNumber && <p>Aadhaar: {donor.userId.aadhaarNumber}</p>}
+                        {donor.donorId?.mobile && <p>Mobile: {donor.donorId.mobile}</p>}
+                        {donor.donorId?.aadhaarNumber && <p>Aadhaar: {donor.donorId.aadhaarNumber}</p>}
                         <p>
-                          {[donor.userId?.townVillage, donor.userId?.district, donor.userId?.state]
+                          {[donor.donorId?.townVillage, donor.donorId?.district, donor.donorId?.state]
                             .filter(Boolean)
                             .join(", ")}
                         </p>

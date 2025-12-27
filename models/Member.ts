@@ -2,30 +2,47 @@ import mongoose from "mongoose"
 
 const MemberSchema = new mongoose.Schema(
   {
-    // 🔑 AUTH METHODS
+    // 🔑 AUTH & LOGIN
     auth: {
       provider: {
         type: String,
-        enum: ["credentials", "google"],
+        enum: ["credentials", "google", "email"],
         required: true
       },
+
       googleId: {
         type: String,
         index: true,
         sparse: true
       },
+
       email: {
         type: String,
+        required: true,
         lowercase: true,
         trim: true,
-        index: true,
-        sparse: true
+        index: true
       },
+
       password: {
         type: String,
         select: false
       },
-      isEmailVerified: { type: Boolean, default: false }
+
+      isEmailVerified: {
+        type: Boolean,
+        default: false
+      },
+
+      emailVerificationToken: {
+        type: String,
+        select: false
+      },
+
+      emailVerificationExpires: {
+        type: Date,
+        select: false
+      }
     },
 
     // 👤 BASIC PROFILE
@@ -33,7 +50,7 @@ const MemberSchema = new mongoose.Schema(
       fullName: { type: String, trim: true },
       age: { type: Number, min: 18 },
       gender: { type: String, enum: ["male", "female", "other"] },
-      profilePhoto: { type: String } // S3 / Cloudinary URL
+      profilePhoto: { type: String }
     },
 
     // 🏠 ADDRESS INFO
@@ -45,11 +62,46 @@ const MemberSchema = new mongoose.Schema(
       pincode: { type: String }
     },
 
-    // 🪪 KYC DETAILS (Sensitive)
+    // 🧑‍🤝‍🧑 VOLUNTEER DETAILS
+    volunteer: {
+      onboardingCompleted: {
+        type: Boolean,
+        default: false
+      },
+
+      skills: [{
+        type: String // caregiver, medical, event, transport
+      }],
+
+      availability: {
+        days: [{
+          type: String,
+          enum: ["mon", "tue", "wed", "thu", "fri", "sat", "sun"]
+        }],
+        timeSlots: [{
+          type: String // morning, afternoon, evening
+        }]
+      },
+
+      volunteerStatus: {
+        type: String,
+        enum: [
+          "new",
+          "onboarding_pending",
+          "pending_verification",
+          "verified",
+          "active",
+          "blocked"
+        ],
+        default: "new"
+      }
+    },
+
+    // 🪪 KYC DETAILS (SENSITIVE)
     kyc: {
       aadhaarNumber: {
         type: String,
-        select: false // 🚨 VERY IMPORTANT
+        select: false
       },
       panNumber: {
         type: String,
@@ -58,26 +110,35 @@ const MemberSchema = new mongoose.Schema(
       },
       aadhaarPhoto: { type: String },
       panPhoto: { type: String },
-      isKycVerified: { type: Boolean, default: false },
-      kycSubmittedAt: { type: Date }
+      isKycVerified: {
+        type: Boolean,
+        default: false
+      },
+      kycSubmittedAt: { type: Date },
+      kycVerifiedAt: { type: Date }
     },
 
     // 👔 ROLE & ACCESS
     role: {
       type: String,
       enum: ["superAdmin", "admin", "staff", "volunteer", "finance"],
-      default: "staff"
+      default: "volunteer"
     },
 
-    // 🟢 STATUS FLAGS
+    // 🟢 ACCOUNT STATUS
     status: {
       isActive: { type: Boolean, default: true },
       isBlocked: { type: Boolean, default: false },
       joinedAt: { type: Date, default: Date.now }
     },
 
-    // 📊 META
-    lastLoginAt: { type: Date },
+    // 📊 META & AUDIT
+    meta: {
+      lastLoginAt: { type: Date },
+      onboardingCompletedAt: { type: Date }
+      
+    },
+
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Member"
@@ -86,10 +147,10 @@ const MemberSchema = new mongoose.Schema(
   { timestamps: true }
 )
 
-
-
+/* 🔐 INDEXES */
 MemberSchema.index({ "auth.googleId": 1 }, { unique: true, sparse: true })
+MemberSchema.index({ "auth.email": 1 }, { unique: true })
 MemberSchema.index({ "kyc.panNumber": 1 }, { unique: true, sparse: true })
 
-
-export default mongoose.models.Member ||mongoose.model("Member", MemberSchema)
+export default mongoose.models.Member ||
+  mongoose.model("Member", MemberSchema)

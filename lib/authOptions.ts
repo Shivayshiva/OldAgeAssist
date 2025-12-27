@@ -111,8 +111,6 @@ export const authOptions: NextAuthOptions = {
 
 
       (user as { id?: string }).id = existingUser._id.toString();
-      // Propagate a guaranteed userType onto the OAuth user object so downstream
-      // callbacks (jwt/session) receive it. Default to "customer" when missing.
       (user as { userType?: string }).userType = existingUser?.role;
       return true;
     },

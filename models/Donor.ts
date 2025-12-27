@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const userSchema = new mongoose.Schema(
+const donorSchema = new mongoose.Schema(
   {
     name: {
       type: String,
@@ -12,6 +12,13 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
       unique: true,
+    },
+
+    email: {
+      type: String,
+      default: null,
+      trim: true,
+      lowercase: true,
     },
 
     aadhaarNumber: {
@@ -28,8 +35,14 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+
+    donorType: {
+      type: String,
+      enum: ["individual", "organization", "corporate"],
+      default: "individual",
+    },
   },
   { timestamps: true }
 );
 
-export default mongoose.models.User || mongoose.model("User", userSchema);
+export default mongoose.models.Donor || mongoose.model("Donor", donorSchema);
