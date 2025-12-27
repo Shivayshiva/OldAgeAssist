@@ -73,7 +73,7 @@ export async function POST(req: Request) {
 
     console.log("connected to DB");
 
-    if (event.event === "payment.captured" || 'order.paid') {
+    if (event.event === "payment.captured" || event.event === "order.paid") {
       const payment = event.payload.payment.entity;
 
       const razorpayOrderId = payment.order_id;
@@ -117,22 +117,18 @@ export async function POST(req: Request) {
         const invoice = await DonationInvoice.create({
           donationId: donation._id,
           donorId: donor._id,
-          donor: {
-            name: donor.name,
-            mobile: donor.mobile,
-            email: donor.email,
-            donorType: donor.donorType,
-          },
+          donorName: donor.name,
+          donorMobile: donor.mobile,
+          donorEmail: donor.email,
+          donorType: donor.donorType,
           amount: donation.amount,
           amountInWords: numberToWords(donation.amount),
           currency: donation.currency,
-          payment: {
-            razorpayOrderId: donation.razorpayOrderId,
-            razorpayPaymentId: razorpayPaymentId,
-            paymentMethod: payment.method,
-            transactionId: payment.acquirer_data?.bank_transaction_id || razorpayPaymentId,
-            paymentDate: new Date(),
-          },
+          paymentMethod: payment.method,
+          razorpayOrderId: donation.razorpayOrderId,
+          razorpayPaymentId: razorpayPaymentId,
+          transactionId: payment.acquirer_data?.bank_transaction_id || razorpayPaymentId,
+          paymentDate: new Date(),
           is80GEligible: true,
           taxExemptionPercentage: 50,
           status: "generated",
