@@ -132,6 +132,15 @@ export async function POST(req: Request) {
           is80GEligible: true,
           taxExemptionPercentage: 50,
           status: "generated",
+          financialYear:"2023-2024",
+          invoiceNumber: `SF/${new Date().getFullYear()}/${String(
+            Math.floor(1000 + Math.random() * 9000)
+          )}`,
+          invoiceDate: new Date(),
+          donationPurpose: "general",
+          donationCategory: "one-time",
+          notes: "",
+          
         });
         console.log("invoice_invoice_invoice",invoice)
         // Generate PDF
