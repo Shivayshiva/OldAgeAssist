@@ -73,7 +73,7 @@ export async function POST(req: Request) {
 
     console.log("connected to DB");
 
-    if (event.event === "payment.captured") {
+    if (event.event === "payment.captured" || 'order.paid') {
       const payment = event.payload.payment.entity;
 
       const razorpayOrderId = payment.order_id;
@@ -97,7 +97,7 @@ export async function POST(req: Request) {
       donation.status = "paid";
       donation.razorpayPaymentId = razorpayPaymentId;
       donation.paymentMethod = payment.method;
-      console.log("Found Donation, updating status to paid");
+      console.log("Found Donation, updating status to paid", donation);
       await donation.save();
       console.log("Found Donation, updated status to paid");
 
@@ -137,7 +137,7 @@ export async function POST(req: Request) {
           taxExemptionPercentage: 50,
           status: "generated",
         });
-        console.log("doner_doner_doner")
+        console.log("invoice_invoice_invoice",invoice)
         // Generate PDF
         const pdfUrl = await generateInvoicePDF({
           invoiceNumber: invoice.invoiceNumber,
@@ -157,13 +157,13 @@ export async function POST(req: Request) {
           foundationPAN: "AAATS1234F",
         });
 
-        console.log("PDF generated successfully:" );
+        console.log("PDF generated successfully:", pdfUrl );
 
         // Update invoice with PDF URL
         invoice.pdfUrl = pdfUrl;
         invoice.pdfGeneratedAt = new Date();
         await invoice.save();
-        console.log("Invoice record updated with PDF URL");
+        console.log("Invoice record updated with PDF URL", invoice);
         // Send email if donor has email
         if (donor.email) {
           const emailSent = await sendInvoiceEmail({
@@ -182,7 +182,7 @@ export async function POST(req: Request) {
             await invoice.save();
           }
 
-          console.log("Invoice email sent to donor:", donor.email);
+          console.log("Invoice email sent to donor:", emailSent);
         }
 
         console.log("Invoice generated successfully:", invoice.invoiceNumber);
