@@ -1,23 +1,32 @@
 import { connectDB } from "@/lib/mongodb"
 import Donation from "@/models/Donation"
-import User from "@/models/User"
-import DonorsClientPage, { Donor } from "./DonorsClientPage"
+import Donor from "@/models/Donor"
+import DonorsClientPage from "./DonorsClientPage"
 
 export const dynamic = "force-dynamic"
 
-async function getDonors(): Promise<Donor[]> {
+interface IDonor {
+  _id: string
+  name: string
+  email: string
+  amount: number
+  createdAt: string
+  donorId: string
+}
+
+async function getDonors(): Promise<IDonor[]> {
   try {
     await connectDB()
 
-    const donors = await Donation.find()
+    const donations = await Donation.find()
       .populate({
-        path: "userId",
-        model: User,
+        path: "donorId",
+        model: Donor,
       })
       .sort({ createdAt: -1 })
       .lean()
 
-    return JSON.parse(JSON.stringify(donors))
+    return JSON.parse(JSON.stringify(donations))
   } catch (error) {
     console.error("Error fetching donors:", error)
     return []
@@ -25,6 +34,6 @@ async function getDonors(): Promise<Donor[]> {
 }
 
 export default async function DonorsPage() {
-  const donors = await getDonors()
-  return <DonorsClientPage donors={donors} />
+  const donations = await getDonors()
+  return <DonorsClientPage donors={donations} />
 }

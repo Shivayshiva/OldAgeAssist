@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/authOptions"
 import { connectDB } from "@/lib/mongodb"
 import { volunteerSchema } from "@/app/superadmin/volunteer/addNew/volunteer-schema"
-import User from "@/models/User"
+import Donor from "@/models/Donor"
 
 export async function GET(req: NextRequest) {
   try {
@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
     const filter: any = { userType: "volunteer" }
     if (status) filter.status = status
 
-    const volunteers = await User.find(filter)
+    const volunteers = await Donor.find(filter)
       .sort({ createdAt: -1 })
       .lean()
 
@@ -90,7 +90,7 @@ export async function POST(req: NextRequest) {
     await connectDB()
 
     // Check if user already exists
-    const existingUser = await User.findOne({ email })
+    const existingUser = await Donor.findOne({ email })
     if (existingUser) {
       return NextResponse.json(
         { error: "A user with this email already exists" },
@@ -106,7 +106,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Create new volunteer user
-    const volunteer = await User.create({
+    const volunteer = await Donor.create({
       firstName,
       lastName,
       fullName: `${firstName} ${lastName}`,
