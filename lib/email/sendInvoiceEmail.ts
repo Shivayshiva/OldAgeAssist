@@ -25,7 +25,7 @@ export async function sendInvoiceEmail(
 
     // Send email with attachment
     const { data, error } = await resend.emails.send({
-      from: "Sirsa Foundation <noreply@sirsafoundation.org>",
+      from: "Sirsa Foundation <onboarding@resend.dev>",
       to: params.to,
       subject: `Donation Receipt - ${params.invoiceNumber}`,
       html: `
