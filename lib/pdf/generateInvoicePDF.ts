@@ -1,7 +1,6 @@
 import { renderToBuffer } from "@react-pdf/renderer"
 import { InvoicePDFDocument } from "./InvoicePDF"
-import fs from "fs/promises"
-import path from "path"
+import imagekit from "@/lib/imagekit"
 
 interface GeneratePDFParams {
   invoiceNumber: string
@@ -54,19 +53,22 @@ export async function generateInvoicePDF(
       InvoicePDFDocument({ data: pdfData })
     );
 
-    // Create invoices directory if it doesn't exist
-    const invoicesDir = path.join(process.cwd(), "public", "invoices");
-    await fs.mkdir(invoicesDir, { recursive: true });
-
     // Generate filename
     const filename = `${params.invoiceNumber.replace(/\//g, "-")}.pdf`;
-    const filepath = path.join(invoicesDir, filename);
 
-    // Save PDF to file
-    await fs.writeFile(filepath, pdfBuffer);
+    // Upload to ImageKit
+    const uploadResponse = await imagekit.upload({
+      file: pdfBuffer,
+      fileName: filename,
+      folder: "/invoices",
+      useUniqueFileName: false,
+      tags: ["invoice", params.invoiceNumber],
+    });
 
-    // Return public URL
-    return `/invoices/${filename}`;
+    console.log("PDF uploaded to ImageKit:", uploadResponse.url);
+
+    // Return ImageKit URL
+    return uploadResponse.url;
   } catch (error) {
     console.error("Error generating invoice PDF:", error);
     throw new Error("Failed to generate invoice PDF");
