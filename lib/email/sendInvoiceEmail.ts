@@ -1,6 +1,4 @@
 import { Resend } from "resend"
-import fs from "fs/promises"
-import path from "path"
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
@@ -9,7 +7,7 @@ interface SendInvoiceEmailParams {
   donorName: string
   amount: number
   invoiceNumber: string
-  pdfPath: string
+  pdfPath: string // This is now the ImageKit URL
   transactionId?: string
 }
 
@@ -17,9 +15,13 @@ export async function sendInvoiceEmail(
   params: SendInvoiceEmailParams
 ): Promise<boolean> {
   try {
-    // Read PDF file
-    const fullPath = path.join(process.cwd(), "public", params.pdfPath)
-    const pdfBuffer = await fs.readFile(fullPath)
+    // Fetch PDF from ImageKit URL
+    const response = await fetch(params.pdfPath);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch PDF from ImageKit: ${response.statusText}`);
+    }
+    const arrayBuffer = await response.arrayBuffer();
+    const pdfBuffer = Buffer.from(arrayBuffer);
 
     // Send email with attachment
     const { data, error } = await resend.emails.send({
