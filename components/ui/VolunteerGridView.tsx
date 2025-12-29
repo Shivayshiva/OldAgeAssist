@@ -21,11 +21,14 @@ type Volunteer = {
   email: string
   phone: string
   status: "Active" | "Inactive" | "Pending"
-  availability: string[]
+  availabilityDays: string[]
+  availabilityTimes: string[],
   skills: string[]
   joinedDate: string
   hoursContributed: number
-  profilePhoto?: string
+  profilePhoto?: string,
+  onboardingCompleted: boolean
+
 }
 
 const getStatusColor = (status: string) => {
@@ -77,7 +80,9 @@ export function VolunteerGridView({
                   .map((n) => n[0])
                   .join("")}
               </AvatarFallback>
+             
             </Avatar>
+             
             <div>
               <CardTitle className="text-base">{volunteer.name}</CardTitle>
               <CardDescription className="text-sm flex items-center gap-1">
@@ -148,18 +153,36 @@ export function VolunteerGridView({
           </div>
         )}
 
-        {volunteer.availability && volunteer.availability.length > 0 && (
+        {volunteer.availabilityDays && volunteer.availabilityDays.length > 0 && (
           <div className="space-y-1">
             <p className="text-xs text-muted-foreground">Availability</p>
             <div className="flex flex-wrap gap-1">
-              {volunteer.availability.slice(0, 2).map((day, index) => (
+              {volunteer.availabilityDays.slice(0, 2).map((day, index) => (
                 <Badge key={index} variant="outline" className="text-xs">
                   {day}
                 </Badge>
               ))}
-              {volunteer.availability.length > 2 && (
+              {volunteer.availabilityDays.length > 2 && (
                 <Badge variant="outline" className="text-xs">
-                  +{volunteer.availability.length - 2}
+                  +{volunteer.availabilityDays.length - 2}
+                </Badge>
+              )}
+            </div>
+          </div>
+        )}
+
+        {volunteer.availabilityTimes && volunteer.availabilityTimes.length > 0 && (
+          <div className="space-y-1">
+            <p className="text-xs text-muted-foreground">Available Times</p>
+            <div className="flex flex-wrap gap-1">
+              {volunteer.availabilityTimes.slice(0, 2).map((time, index) => (
+                <Badge key={index} variant="outline" className="text-xs">
+                  {time}
+                </Badge>
+              ))}
+              {volunteer.availabilityTimes.length > 2 && (
+                <Badge variant="outline" className="text-xs">
+                  +{volunteer.availabilityTimes.length - 2}
                 </Badge>
               )}
             </div>
