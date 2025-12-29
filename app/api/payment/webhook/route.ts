@@ -6,13 +6,12 @@ import Donor from "@/models/Donor";
 import DonationInvoice from "@/models/DonationInvoice";
 import { generateInvoicePDF, numberToWords } from "@/lib/pdf/generateInvoicePDF";
 import { sendInvoiceEmail } from "@/lib/email/sendInvoiceEmail";
+import { invoiceQueue } from "@/lib/queues/invoiceQueue";
 
-// Disable body parsing for webhook to access raw body
 export const dynamic = 'force-dynamic';
 
 export async function POST(req: Request) {
   try {
-    // Log all headers for debugging
     const headers: Record<string, string> = {};
     req.headers.forEach((value, key) => {
       headers[key] = value;
@@ -24,11 +23,6 @@ export async function POST(req: Request) {
 
     const razorpaySignature =
       req.headers.get("x-razorpay-signature") || req.headers.get("X-Razorpay-Signature");
-
-    // Only verify signature if VERIFY_WEBHOOK_SIGNATURE is explicitly set to "true"
-    // const shouldVerifySignature = process.env.VERIFY_WEBHOOK_SIGNATURE === "true";
-
-    // if (shouldVerifySignature) {
       if (!process.env.RAZORPAY_WEBHOOK_SECRET) {
         console.error("VERIFY_WEBHOOK_SIGNATURE is enabled but RAZORPAY_WEBHOOK_SECRET is not set");
         return NextResponse.json(
@@ -61,9 +55,7 @@ export async function POST(req: Request) {
         );
       }
       console.log("Signature verified successfully");
-    // } else {
-    //   console.warn("Webhook signature verification is DISABLED - set VERIFY_WEBHOOK_SIGNATURE=true to enable");
-    // }
+
 
     const event = JSON.parse(body);
 
@@ -106,95 +98,107 @@ export async function POST(req: Request) {
         isDonor: true,
       });
 
-      console.log("Got donor and updated isDonor flag");
-      // Generate invoice and send email
-      try {
-        // Populate donor details
-        await donation.populate("donorId");
-        const donor = donation.donorId as any;
+      // console.log("Got donor and updated isDonor flag");
+      // try {
+      //   // Populate donor details
+      //   await donation.populate("donorId");
+      //   const donor = donation.donorId as any;
 
-        // Create invoice record
-        const invoice = await DonationInvoice.create({
-          donationId: donation._id,
-          donorId: donor._id,
-          donorName: donor.name,
-          donorMobile: donor.mobile,
-          donorEmail: donor.email,
-          donorType: donor.donorType,
-          amount: donation.amount,
-          amountInWords: numberToWords(donation.amount),
-          currency: donation.currency,
-          paymentMethod: payment.method,
-          razorpayOrderId: donation.razorpayOrderId,
-          razorpayPaymentId: razorpayPaymentId,
-          transactionId: payment.acquirer_data?.bank_transaction_id || razorpayPaymentId,
-          paymentDate: new Date(),
-          is80GEligible: true,
-          taxExemptionPercentage: 50,
-          status: "generated",
-          financialYear:"2023-2024",
-          invoiceNumber: `SF/${new Date().getFullYear()}/${String(
-            Math.floor(1000 + Math.random() * 9000)
-          )}`,
-          invoiceDate: new Date(),
-          donationPurpose: "general",
-          donationCategory: "one-time",
-          notes: "",
-          
-        });
-        console.log("invoice_invoice_invoice",invoice)
-        // Generate PDF
-        const pdfUrl = await generateInvoicePDF({
-          invoiceNumber: invoice.invoiceNumber,
-          invoiceDate: invoice.invoiceDate,
-          donorName: donor.name,
-          donorMobile: donor.mobile,
-          donorEmail: donor.email,
-          amount: donation.amount,
-          amountInWords: invoice.amountInWords,
-          paymentMethod: payment.method,
-          transactionId: payment.acquirer_data?.bank_transaction_id || razorpayPaymentId,
-          paymentDate: new Date(),
-          receiptNumber: invoice.invoiceNumber,
-          is80GEligible: true,
-          foundationName: "Sirsa Foundation",
-          foundationAddress: "Old Age Home, Sirsa, Haryana, India",
-          foundationPAN: "AAATS1234F",
-        });
+      //   // Create invoice record
+      //   const invoice = await DonationInvoice.create({
+      //     donationId: donation._id,
+      //     donorId: donor._id,
+      //     donorName: donor.name,
+      //     donorMobile: donor.mobile,
+      //     donorEmail: donor.email,
+      //     donorType: donor.donorType,
+      //     amount: donation.amount,
+      //     amountInWords: numberToWords(donation.amount),
+      //     currency: donation.currency,
+      //     paymentMethod: payment.method,
+      //     razorpayOrderId: donation.razorpayOrderId,
+      //     razorpayPaymentId: razorpayPaymentId,
+      //     transactionId: payment.acquirer_data?.bank_transaction_id || razorpayPaymentId,
+      //     paymentDate: new Date(),
+      //     is80GEligible: true,
+      //     taxExemptionPercentage: 50,
+      //     status: "generated",
+      //     financialYear:"2023-2024",
+      //     invoiceNumber: `SF/${new Date().getFullYear()}/${String(
+      //       Math.floor(1000 + Math.random() * 9000)
+      //     )}`,
+      //     invoiceDate: new Date(),
+      //     donationPurpose: "general",
+      //     donationCategory: "one-time",
+      //     notes: "",
 
-        console.log("PDF generated successfully:", pdfUrl );
+      //   });
+      //   console.log("invoice_invoice_invoice",invoice)
 
-        // Update invoice with PDF URL
-        invoice.pdfUrl = pdfUrl;
-        invoice.pdfGeneratedAt = new Date();
-        await invoice.save();
-        console.log("Invoice record updated with PDF URL", invoice);
-        // Send email if donor has email
-        if (donor.email) {
-          const emailSent = await sendInvoiceEmail({
-            to: donor.email,
-            donorName: donor.name,
-            amount: donation.amount,
-            invoiceNumber: invoice.invoiceNumber,
-            pdfPath: pdfUrl,
-            transactionId: payment.acquirer_data?.bank_transaction_id || razorpayPaymentId,
-          });
+      //   // Generate PDF
+      //   const pdfUrl = await generateInvoicePDF({
+      //     invoiceNumber: invoice.invoiceNumber,
+      //     invoiceDate: invoice.invoiceDate,
+      //     donorName: donor.name,
+      //     donorMobile: donor.mobile,
+      //     donorEmail: donor.email,
+      //     amount: donation.amount,
+      //     amountInWords: invoice.amountInWords,
+      //     paymentMethod: payment.method,
+      //     transactionId: payment.acquirer_data?.bank_transaction_id || razorpayPaymentId,
+      //     paymentDate: new Date(),
+      //     receiptNumber: invoice.invoiceNumber,
+      //     is80GEligible: true,
+      //     foundationName: "Sirsa Foundation",
+      //     foundationAddress: "Sirsa Foundation, Gorakhpur, Uttar Pradesh, India",
+      //     foundationPAN: "AAATS1234F",
+      //   });
 
-          if (emailSent) {
-            invoice.sentTo = [donor.email];
-            invoice.sentAt = new Date();
-            invoice.status = "sent";
-            await invoice.save();
+      //   console.log("PDF generated successfully:", pdfUrl );
+
+      //   // Update invoice with PDF URL
+      //   invoice.pdfUrl = pdfUrl;
+      //   invoice.pdfGeneratedAt = new Date();
+      //   await invoice.save();
+      //   console.log("Invoice record updated with PDF URL", invoice);
+      //   // Send email if donor has email
+      //   if (donor.email) {
+      //     const emailSent = await sendInvoiceEmail({
+      //       to: donor.email,
+      //       donorName: donor.name,
+      //       amount: donation.amount,
+      //       invoiceNumber: invoice.invoiceNumber,
+      //       pdfPath: pdfUrl,
+      //       transactionId: payment.acquirer_data?.bank_transaction_id || razorpayPaymentId,
+      //     });
+
+      //     if (emailSent) {
+      //       invoice.sentTo = [donor.email];
+      //       invoice.sentAt = new Date();
+      //       invoice.status = "sent";
+      //       await invoice.save();
+      //     }
+      //     console.log("Invoice email sent to donor:", emailSent);
+      //   }
+
+      //   console.log("Invoice generated successfully:", invoice.invoiceNumber);
+      // } catch (invoiceError) {
+      //   console.error("Error generating invoice:", invoiceError);
+      // }
+
+       await invoiceQueue.add(
+          "generate-invoice",
+          { 
+            donationId: donation._id.toString(),
+            paymentId: payment.id,
+            payment:payment
+          },
+          {
+            attempts: 5,
+            backoff: { type: "exponential", delay: 5000 },
+            removeOnComplete: true,
           }
-
-          console.log("Invoice email sent to donor:", emailSent);
-        }
-
-        console.log("Invoice generated successfully:", invoice.invoiceNumber);
-      } catch (invoiceError) {
-        console.error("Error generating invoice:", invoiceError);
-        // Don't fail the webhook if invoice generation fails
-      }
+        );
     }
 
     return NextResponse.json({ received: true });
