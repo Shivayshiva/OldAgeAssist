@@ -11,6 +11,8 @@ export function HomeNavbar() {
   const [isOpen, setIsOpen] = useState(false)
   const { data: session, status } = useSession()
 
+  console.log("isOpen_ISOpen", isOpen)
+
   // Determine home route based on user role
   const getHomeRoute = () => {
     if (!session?.user) return "/"
@@ -38,13 +40,13 @@ export function HomeNavbar() {
         <Image src="/sirsafoundation.png" alt="Sirsa Foundation Logo" width={120} height={120} className="rounded-xl shadow-lg border border-primary/20" />
         <div className="font-bold animate-fade-in-up">
           <h1
-            className="text-4xl md:text-5xl font-extrabold tracking-tight drop-shadow-lg transition-all duration-700 text-primary/90"
+            className="text-3xl md:text-5xl font-extrabold tracking-tight drop-shadow-lg transition-all duration-700 text-primary/90"
             style={{ fontFamily: 'Merriweather, serif', letterSpacing: '0.04em' }}
           >
             SIRSA Foundation
           </h1>
           <p
-            className="text-lg md:text-xl font-semibold italic animate-fade-in-up delay-200 text-fuchsia-200 drop-shadow-sm"
+            className="text-md md:text-xl font-semibold italic animate-fade-in-up delay-200 text-fuchsia-200 drop-shadow-sm"
             style={{ fontFamily: 'Lato, sans-serif', letterSpacing: '0.02em' }}
           >
             Empowering Communities, Changing Lives
@@ -77,7 +79,7 @@ export function HomeNavbar() {
 
         {/* Mobile Menu Button */}
         <button
-          className="md:hidden p-2 hover:bg-secondary rounded-lg transition-colors text-primary-foreground"
+          className="md:hidden p-2 hover:bg-secondary rounded-lg transition-colors text-primary-foreground z-50"
           onClick={() => setIsOpen(!isOpen)}
         >
           {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -86,7 +88,7 @@ export function HomeNavbar() {
 
       {/* Mobile Menu */}
       {isOpen && (
-        <div className="absolute top-full left-0 right-0 z-50 bg-primary border-t border-primary-foreground/10 p-4 md:hidden flex flex-col gap-4 shadow-lg rounded-b-lg">
+        <div className="absolute top-15  left-0 right-0  bg-primary border-t border-primary-foreground/10 p-4 md:hidden flex flex-col gap-4 shadow-lg rounded-b-lg z-100">
            {status === "authenticated" ? (
             <>
              <Button variant="default"  asChild>
