@@ -28,13 +28,17 @@ export function SuperadminSidebarMenuitem() {
   const pathname = usePathname()
 
   return (
-    <SidebarMenu className="mt-5 ml-2 max-w-fit">
+    <SidebarMenu className="mt-5 pl-4 max-w-fit">
       {navigation?.map((item)=>( 
         <SidebarMenuItem key={item?.name}>
           <SidebarMenuButton
             asChild
             isActive={pathname === item.href}
-            className={(pathname === item.href) ? "bg-primary text-primary-foreground hover:bg-primary/90" : ""}
+            className={
+              pathname === item.href
+                ? "bg-primary text-primary-foreground hover:bg-primary/90 ring-2 ring-primary/60 shadow-md"
+                : "hover:bg-primary/10"
+            }
           >
             <Link href={item.href} className="flex items-center gap-6">
               <item.icon className="size-5" />

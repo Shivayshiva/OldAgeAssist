@@ -37,7 +37,7 @@ export default function SuperAdminRouteLayout({
 }) {
   return (
     <div className="min-h-screen bg-muted/10">
-      <main className="container mx-auto px-4 py-8">
+      <main className="container max-w-full mx-auto ">
         <SuperAdminLayout>{children}</SuperAdminLayout>
       </main>
     </div>

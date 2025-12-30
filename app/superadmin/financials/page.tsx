@@ -2,12 +2,10 @@
 
 import { useEffect, useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 import { Bar, BarChart, XAxis, YAxis, CartesianGrid } from "recharts"
-import { Download, DollarSign, TrendingUp, TrendingDown, Calendar } from "lucide-react"
+import { DollarSign, TrendingDown } from "lucide-react"
 import { CustomTitle } from "@/components/ui/CustomTitle"
-import { GlobalButton } from "@/components/ui/GlobalButton"
 import { CommonCard } from "@/components/ui/CustomCard"
 import { CustomTable } from "@/components/ui/CustomTable"
 import { subMonths, format } from "date-fns"
@@ -48,7 +46,6 @@ export default function FinancialsPage() {
       setDonations(data.donations || [])
       setLoading(false)
 
-      // Calculate revenue per month for last 6 months
       const now = new Date()
       const months = Array.from({ length: 6 }, (_, i) => subMonths(now, 5 - i))
       const monthLabels = months.map((d) => format(d, "MMM"))
@@ -74,7 +71,7 @@ export default function FinancialsPage() {
         {/* Page Header */}
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
-            <CustomTitle title="Financials" subtitle="Track revenue, expenses, and resident billing information" />
+            <CustomTitle title="Financials" description="Track revenue, expenses, and resident billing information" />
           </div>
           <div className="flex gap-2">
             {/* <GlobalButton size="sm" title="Export Data" icon={<Download className="size-4" />} /> */}

@@ -45,7 +45,7 @@ export default function ResidentsPage() {
       }
 
       // Transform API data to match component structure
-      const transformedData = result.data.map((resident: any) => ({
+      const transformedData = result?.data?.map((resident: any) => ({
         id: resident._id,
         name: resident.fullName,
         room: resident.admissionDetails?.roomNumber || "N/A",

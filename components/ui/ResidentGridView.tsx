@@ -111,20 +111,20 @@ export function ResidentGridView({
       <CardContent className="space-y-3">
         <div className="flex items-center justify-between text-sm">
           <span className="text-muted-foreground">Room:</span>
-          <Badge variant="outline">{resident.room}</Badge>
+          <Badge variant="outline">{resident?.room}</Badge>
         </div>
         <div className="flex items-center justify-between text-sm">
           <span className="text-muted-foreground">Status:</span>
-          <Badge variant={getStatusColor(resident.status)}>
-            {resident.status}
+          <Badge variant={getStatusColor(resident?.status)}>
+            {resident?.status}
           </Badge>
         </div>
         <div className="flex items-start gap-2 text-sm">
           <Phone className="size-4 text-muted-foreground mt-0.5" />
           <div className="flex-1">
             <p className="text-muted-foreground text-xs">Primary Contact</p>
-            <p className="font-medium">{resident.primaryContact}</p>
-            <p className="text-xs text-muted-foreground">{resident.primaryContactPhone}</p>
+            <p className="font-medium">{resident?.primaryContact}</p>
+            <p className="text-xs text-muted-foreground">{resident?.primaryContactPhone}</p>
           </div>
         </div>
         <div className="flex items-start gap-2 text-sm">
@@ -132,22 +132,22 @@ export function ResidentGridView({
           <div className="flex-1">
             <p className="text-muted-foreground text-xs">Medical Condition</p>
             <p className="font-medium text-xs line-clamp-2">
-              {resident.medicalCondition}
+              {resident?.medicalCondition}
             </p>
           </div>
         </div>
-        {resident.disabilities && resident.disabilities.length > 0 && (
+        {resident?.disabilities && resident?.disabilities.length > 0 && (
           <div className="text-xs">
             <span className="text-muted-foreground">Disabilities: </span>
-            <span className="font-medium">{resident.disabilities.join(", ")}</span>
+            <span className="font-medium">{resident?.disabilities.join(", ")}</span>
           </div>
         )}
         <div className="flex items-center justify-between text-xs border-t pt-2">
           <span className="text-muted-foreground">Mental Health:</span>
-          <Badge variant="outline" className="text-xs">{resident.mentalHealthStatus}</Badge>
+          <Badge variant="outline" className="text-xs">{resident?.mentalHealthStatus}</Badge>
         </div>
         <div className="text-xs text-muted-foreground">
-          Admitted: {new Date(resident.admissionDate).toLocaleDateString()}
+          Admitted: {new Date(resident?.admissionDate).toLocaleDateString()}
         </div>
       </CardContent>
     </Card>
