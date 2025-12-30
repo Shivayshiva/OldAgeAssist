@@ -17,13 +17,26 @@ const chartConfig = {
   },
 }
 
+type Donation = {
+  _id: string;
+  donorId?: {
+    _id?: string;
+    name?: string;
+  };
+  amount?: number;
+  currency?: string;
+  status?: string;
+  paymentMethod?: string;
+  createdAt: string;
+};
+
 const donationColumns = [
-  { header: "Donor Name", accessorKey: "donorId", cell: (d) => d?.donorId?.name || "-" },
-  { header: "Amount", accessorKey: "amount", cell: (d) => `₹ ${d?.amount}` },
-  { header: "Currency", accessorKey: "currency", cell: (d) => `₹ ${d?.currency}` },
-  { header: "Status", accessorKey: "status", cell: (d) => `${d?.status}` },
-  { header: "Payment Method", accessorKey: "paymentMethod", cell: (d) => `${d?.paymentMethod}` },
-  { header: "Date", accessorKey: "createdAt", cell: (d) => new Date(d.createdAt).toLocaleDateString() },
+  { header: "Donor Name", accessorKey: "donorId", cell: (d: Donation) => d?.donorId?.name || "-" },
+  { header: "Amount", accessorKey: "amount", cell: (d: Donation) => `₹ ${d?.amount}` },
+  { header: "Currency", accessorKey: "currency", cell: (d: Donation) => `₹ ${d?.currency}` },
+  { header: "Status", accessorKey: "status", cell: (d: Donation) => `${d?.status}` },
+  { header: "Payment Method", accessorKey: "paymentMethod", cell: (d: Donation) => `${d?.paymentMethod}` },
+  { header: "Date", accessorKey: "createdAt", cell: (d: Donation) => new Date(d.createdAt).toLocaleDateString() },
 ];
 
 export default function FinancialsPage() {
@@ -52,7 +65,7 @@ export default function FinancialsPage() {
       const revenueByMonth = months.map((monthDate, idx) => {
         const month = monthDate.getMonth()
         const year = monthDate.getFullYear()
-        const revenue = (data.donations || []).reduce((sum, d) => {
+        const revenue = (data.donations || []).reduce((sum, d:Donation) => {
           const date = new Date(d.createdAt)
           if (date.getMonth() === month && date.getFullYear() === year && d.status === "paid") {
             return sum + (d.amount || 0)
@@ -83,12 +96,12 @@ export default function FinancialsPage() {
           <CommonCard
             title="Total Donation"
             icon={<DollarSign className="size-4 text-muted-foreground" />}
-            value={`₹ ${donations.filter(d => d.status === "paid").reduce((sum, d) => sum + (d.amount || 0), 0).toLocaleString()}`}
+            value={`₹ ${donations.filter((d: Donation) => d.status === "paid").reduce((sum, d:Donation) => sum + (d.amount || 0), 0).toLocaleString()}`}
             // description={<span className="flex items-center gap-1"><TrendingUp className="size-3 text-chart-2" /><span className="text-chart-2 font-medium">{donations.length > 1 ? `+${(((donations.filter(d => d.status === "paid" && new Date(d.createdAt) >= subMonths(new Date(), 1)).reduce((sum, d) => sum + (d.amount || 0), 0)) / Math.max(1, donations.filter(d => d.status === "paid" && new Date(d.createdAt) < subMonths(new Date(), 1)).reduce((sum, d) => sum + (d.amount || 0), 0)) - 1) * 100).toFixed(1)}%` : '+0%'} </span> from last month</span>}
           />
           <CommonCard
             title="Total Donar"
-            value={donations.filter(d => d.status === "paid").map(d => d.donorId?._id).filter((v, i, a) => v && a.indexOf(v) === i).length}
+            value={donations.filter((d: Donation) => d.status === "paid").map((d:Donation) => d.donorId?._id).filter((v, i, a) => v && a.indexOf(v) === i).length}
             // description={<span>{donations.filter(d => d.status === "paid").length} transactions</span>}
           />
           <CommonCard
