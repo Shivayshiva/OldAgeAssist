@@ -1,9 +1,10 @@
 "use client"
 
 import { motion } from "framer-motion"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { Heart, Users, HandHeart, ArrowRight } from "lucide-react"
+import { Heart, Users, HandHeart, ArrowRight, HeartIcon } from "lucide-react"
 import Link from "next/link"
 import { useSession } from "next-auth/react"
 import { HomeNavbar } from "@/components/layout/home-navbar"
@@ -25,18 +26,30 @@ export default function HomeClientPage() {
 
    const { data: session, status } = useSession();
 
-   console.log("_____home_____", session, status)
-
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-primary text-primary-foreground">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary to-accent/20"></div>
-        <HomeNavbar />
-        <div className="relative container mx-auto px-4 py-16 md:py-24 lg:py-32">
+      
+      <section className="relative overflow-hidden ">
+        {/* Lazy-loaded background image */}
+        <Image
+          src="/SirsaCoverPhoto.png"
+          alt="Sirsa Foundation Cover"
+          fill
+          priority={false}
+          // quality={80}
+          className="object-cover object-center w-full h-full absolute inset-0 z-0 opacity-50"
+          sizes="100vw"
+        />
+        {/* Overlay for better text contrast and color tint */}
+        <div className="absolute inset-0 z-10 bg-black/40 " />
+        <div className="relative z-30">
+          <HomeNavbar />
+        </div>
+        <div className="relative container mx-auto px-4 py-16 md:py-5 lg:py-5 z-20">
           <motion.div initial="initial" animate="animate" variants={stagger} className="max-w-4xl mx-auto text-center">
-            <motion.div variants={fadeInUp} className="mb-4 md:mb-6">
-              <Heart className="w-12 h-12 md:w-16 md:h-16 mx-auto animate-pulse" />
+            <motion.div variants={fadeInUp} className="mb-4 md:mb-4 flex justify-center gap-0.5">
+              <HeartIcon fill="currentColor" className="w-16 h-16 md:w-20 md:h-20 mx-auto animate-pulse text-primary" />
             </motion.div>
             <motion.h1
               variants={fadeInUp}
@@ -48,7 +61,7 @@ export default function HomeClientPage() {
             </motion.h1>
             <motion.p
               variants={fadeInUp}
-              className="text-base md:text-lg lg:text-xl mb-6 md:mb-8 text-primary-foreground/90 text-pretty max-w-2xl mx-auto leading-relaxed"
+              className="text-base md:text-lg lg:text-xl mb-6 md:mb-8  text-pretty max-w-2xl mx-auto leading-relaxed"
             >
               Join us in making a meaningful difference in the lives of elderly residents across India. Your donation
               provides care, comfort, and dignity to those who need it most.
@@ -57,7 +70,7 @@ export default function HomeClientPage() {
               <Button
                 asChild
                 size="lg"
-                variant="secondary"
+                variant="default"
                 className="text-base md:text-lg group w-full sm:w-auto min-h-[48px]"
               >
                 <Link href="/donate">
@@ -68,8 +81,10 @@ export default function HomeClientPage() {
               <Button
                 asChild
                 size="lg"
-                variant="outline"
-                className="text-base md:text-lg bg-primary-foreground/10 hover:bg-primary-foreground/20 border-primary-foreground/30 w-full sm:w-auto min-h-[48px]"
+                variant="secondary"
+                className="text-base md:text-lg group w-full sm:w-auto min-h-[48px]"
+
+                // className="text-base md:text-lg bg-primary-foreground/10 hover:bg-primary-foreground/20 border-primary-foreground/30 w-full sm:w-auto min-h-[48px]"
               >
                 <Link href="/donors">View Our Supporters</Link>
               </Button>
@@ -79,7 +94,7 @@ export default function HomeClientPage() {
       </section>
 
       {/* Stats Section */}
-      <section className="py-12 md:py-16 bg-secondary/30">
+      <section className="py-12 md:py-16">
         <motion.div
           initial="initial"
           whileInView="animate"
