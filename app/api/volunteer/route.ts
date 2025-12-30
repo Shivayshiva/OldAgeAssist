@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/authOptions"
 import { connectDB } from "@/lib/mongodb"
 import { volunteerSchema } from "@/app/superadmin/volunteer/addNew/volunteer-schema"
 import Donor from "@/models/Donor"
+import Member from "@/models/Member"
 
 export async function GET(req: NextRequest) {
   try {
@@ -12,10 +13,10 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url)
     const status = searchParams.get("status")
 
-    const filter: any = { userType: "volunteer" }
+    const filter: any = { role: "volunteer" }
     if (status) filter.status = status
 
-    const volunteers = await Donor.find(filter)
+    const volunteers = await Member.find(filter)
       .sort({ createdAt: -1 })
       .lean()
 

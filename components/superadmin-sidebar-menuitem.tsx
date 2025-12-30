@@ -8,54 +8,45 @@ import {
   LayoutDashboard,
   Users,
   UserCog,
-  Activity,
   DollarSign,
-  Building2,
-  Settings,
-  FileText,
   HandHeart,
 } from "lucide-react"
-
-interface SuperadminSidebarMenuitemProps {
-  item: {
-    name: string
-    href: string
-    icon: LucideIcon
-  }
-}
 
 const navigation = [
   { name: "Overview", href: "/superadmin", icon: LayoutDashboard },
   { name: "Residents", href:"/superadmin/residents", icon: Users },
-  { name: "Staff & Volunteers", href: "/superadmin/staff", icon: UserCog },
-  { name: "Medical Records", href: "/superadmin/medical", icon: Activity },
+  { name: "Staff Management", href: "/superadmin/staff", icon: UserCog },
+  { name: "Volunteer Management", href: "/superadmin/volunteer", icon: UserCog },
+  // { name: "Medical Records", href: "/superadmin/medical", icon: Activity },
   { name: "Financials", href: "/superadmin/financials", icon: DollarSign },
-  { name: "Room Management", href: "/superadmin/rooms", icon: Building2 },
+  // { name: "Room Management", href: "/superadmin/rooms", icon: Building2 },
   { name: "Foundation Work", href: "/superadmin/foundation", icon: HandHeart },
-  { name: "Reports", href: "/reports", icon: FileText },
+  // { name: "Reports", href: "/reports", icon: FileText },
 ]
 
 export function SuperadminSidebarMenuitem() {
   const pathname = usePathname()
 
   return (
-     <SidebarMenu className="mt-5 ml-2 max-w-fit">
-        {navigation?.map((item)=>( 
-            
-    <SidebarMenuItem key={item?.name}>
-      <SidebarMenuButton
-        asChild
-        isActive={pathname === item.href}
-        className={(pathname === item.href) ? "bg-primary text-primary-foreground hover:bg-primary/90" : ""}
-      >
-        <Link href={item.href} className="flex items-center gap-6">
-          <item.icon className="size-5" />
-          <span>{item.name}</span>
-        </Link>
-      </SidebarMenuButton>
-    </SidebarMenuItem>
-))}
+    <SidebarMenu className="mt-5 pl-4 max-w-fit">
+      {navigation?.map((item)=>( 
+        <SidebarMenuItem key={item?.name}>
+          <SidebarMenuButton
+            asChild
+            isActive={pathname === item.href}
+            className={
+              pathname === item.href
+                ? "bg-primary text-primary-foreground hover:bg-primary/90 ring-2 ring-primary/60 shadow-md"
+                : "hover:bg-primary/10"
+            }
+          >
+            <Link href={item.href} className="flex items-center gap-6">
+              <item.icon className="size-5" />
+              <span>{item.name}</span>
+            </Link>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+      ))}
      </SidebarMenu>
-   
   )
 }

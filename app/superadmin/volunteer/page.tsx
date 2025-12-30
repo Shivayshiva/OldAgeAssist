@@ -37,22 +37,26 @@ export default function VolunteersPage() {
       const response = await fetch("/api/volunteer")
       const result = await response.json()
 
+      console.log("VOLUNTEERSAPI_volunteerapi", result)
+
       if (!response.ok) {
         throw new Error(result.error || "Failed to fetch volunteers")
       }
 
       // Transform API data to match component structure
-      const transformedData = result.data.map((volunteer: any) => ({
+      const transformedData = result?.data?.map((volunteer: any) => ({
         id: volunteer._id,
-        name: volunteer.fullName || `${volunteer.firstName} ${volunteer.lastName}`,
-        email: volunteer.email,
+        name: volunteer?.profile?.fullName || " ",
+        email: volunteer?.auth?.email,
         phone: volunteer.phone || volunteer.mobileNumber || "N/A",
-        status: volunteer.status === "active" ? "Active" : volunteer.status === "pending" ? "Pending" : "Inactive",
-        availability: volunteer.availability || [],
-        skills: volunteer.skills || [],
+        status: volunteer?.status?.isActive ? "Active" :  "Inactive",
+        availabilityDays: volunteer?.volunteer?.availability?.days || [],
+        availabilityTimes: volunteer?.volunteer?.availability?.timeSlots || [],
+        skills: volunteer?.volunteer?.skills || [],
         joinedDate: volunteer.createdAt || volunteer.joinedDate || "",
         hoursContributed: volunteer.hoursContributed || 0,
-        profilePhoto: volunteer.profilePhoto || volunteer.profilePicture || "",
+        profilePhoto: volunteer?.profile?.profilePhoto || "",
+        onboardingCompleted: volunteer?.volunteer?.availability?.onboardingCompleted || false,
       }))
 
       setVolunteers(transformedData)
@@ -69,22 +73,20 @@ export default function VolunteersPage() {
 
   return (
     <div className="space-y-6">
-      {/* Page Header */}
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <CustomTitle
           title="Volunteer Management"
           description="Manage volunteers, schedules, and contributions"
         />
-        <Link href="/superadmin/volunteer/addNew">
+        {/* <Link href="/superadmin/volunteer/addNew">
           <GlobalButton
             size="sm"
             icon={<UserPlus className="size-4" />}
             title="Add Volunteer"
           />
-        </Link>
+        </Link> */}
       </div>
 
-      {/* Stats Cards */}
       <div className="grid gap-4 md:grid-cols-3">
         <CommonCard
           title="Total Volunteers"

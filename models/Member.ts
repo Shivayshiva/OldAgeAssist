@@ -2,7 +2,6 @@ import mongoose from "mongoose"
 
 const MemberSchema = new mongoose.Schema(
   {
-    // 🔑 AUTH & LOGIN
     auth: {
       provider: {
         type: String,
@@ -45,7 +44,6 @@ const MemberSchema = new mongoose.Schema(
       }
     },
 
-    // 👤 BASIC PROFILE
     profile: {
       fullName: { type: String, trim: true },
       age: { type: Number, min: 18 },
@@ -53,7 +51,6 @@ const MemberSchema = new mongoose.Schema(
       profilePhoto: { type: String }
     },
 
-    // 🏠 ADDRESS INFO
     address: {
       addressLine: { type: String },
       townOrVillage: { type: String },
@@ -62,7 +59,6 @@ const MemberSchema = new mongoose.Schema(
       pincode: { type: String }
     },
 
-    // 🧑‍🤝‍🧑 VOLUNTEER DETAILS
     volunteer: {
       onboardingCompleted: {
         type: Boolean,
@@ -70,7 +66,7 @@ const MemberSchema = new mongoose.Schema(
       },
 
       skills: [{
-        type: String // caregiver, medical, event, transport
+        type: String
       }],
 
       availability: {
@@ -79,7 +75,7 @@ const MemberSchema = new mongoose.Schema(
           enum: ["mon", "tue", "wed", "thu", "fri", "sat", "sun"]
         }],
         timeSlots: [{
-          type: String // morning, afternoon, evening
+          type: String 
         }]
       },
 
@@ -97,7 +93,6 @@ const MemberSchema = new mongoose.Schema(
       }
     },
 
-    // 🪪 KYC DETAILS (SENSITIVE)
     kyc: {
       aadhaarNumber: {
         type: String,
@@ -118,21 +113,18 @@ const MemberSchema = new mongoose.Schema(
       kycVerifiedAt: { type: Date }
     },
 
-    // 👔 ROLE & ACCESS
     role: {
       type: String,
       enum: ["superAdmin", "admin", "staff", "volunteer", "finance"],
       default: "volunteer"
     },
 
-    // 🟢 ACCOUNT STATUS
     status: {
       isActive: { type: Boolean, default: true },
       isBlocked: { type: Boolean, default: false },
       joinedAt: { type: Date, default: Date.now }
     },
 
-    // 📊 META & AUDIT
     meta: {
       lastLoginAt: { type: Date },
       onboardingCompletedAt: { type: Date }
@@ -147,7 +139,6 @@ const MemberSchema = new mongoose.Schema(
   { timestamps: true }
 )
 
-/* 🔐 INDEXES */
 MemberSchema.index({ "auth.googleId": 1 }, { unique: true, sparse: true })
 MemberSchema.index({ "auth.email": 1 }, { unique: true })
 MemberSchema.index({ "kyc.panNumber": 1 }, { unique: true, sparse: true })

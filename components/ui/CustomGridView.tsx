@@ -56,7 +56,7 @@ export function CustomGridView<T extends Record<string, any>>({
 
     // Apply filters
     Object.entries(activeFilters).forEach(([key, value]) => {
-      if (value) {
+        if (value && value !== "all") {
         result = result.filter((item) => item[key] === value)
       }
     })

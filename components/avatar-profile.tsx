@@ -28,20 +28,20 @@ export function AvatarProfileMobileview() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="w-full justify-start gap-2 p-2 ">
-          <Avatar className="size-8 ring-2 ring-primary/10">
+        <Button variant="ghost" className="w-full justify-start gap-2 pl-2">
+          <Avatar className="">
             <AvatarImage src={session?.user?.image || "/placeholder.svg?height=32&width=32"} />
             <AvatarFallback className="bg-gradient-to-br from-primary to-secondary text-primary-foreground text-xs font-semibold">
               {userInitials}
             </AvatarFallback>
           </Avatar>
           <div className="flex flex-col items-start text-left">
-            <span className="text-sm font-semibold">{userName}</span>
+            <span className="text-md font-bold">{userName}</span>
             <span className="text-xs text-muted-foreground">{userEmail}</span>
           </div>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-56">
+      <DropdownMenuContent align="end" className="w-60">
         <DropdownMenuLabel>My Account</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem>

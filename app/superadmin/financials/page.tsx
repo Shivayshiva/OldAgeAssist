@@ -1,60 +1,14 @@
 "use client"
 
-import { SuperAdminLayout } from "@/components/super-admin-layout"
+import { useEffect, useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 import { Bar, BarChart, XAxis, YAxis, CartesianGrid } from "recharts"
-import { Search, Filter, Download, DollarSign, TrendingUp, TrendingDown, Calendar } from "lucide-react"
-
-// Mock financial data
-const revenueData = [
-  { month: "Jan", revenue: 125000 },
-  { month: "Feb", revenue: 132000 },
-  { month: "Mar", revenue: 128000 },
-  { month: "Apr", revenue: 145000 },
-  { month: "May", revenue: 138000 },
-  { month: "Jun", revenue: 155000 },
-]
-
-const transactions = [
-  {
-    id: 1,
-    resident: "Margaret Wilson",
-    type: "Monthly Fee",
-    amount: 4500,
-    status: "Paid",
-    date: "2024-01-15",
-  },
-  {
-    id: 2,
-    resident: "James Rodriguez",
-    type: "Medical Services",
-    amount: 850,
-    status: "Pending",
-    date: "2024-01-14",
-  },
-  {
-    id: 3,
-    resident: "Elizabeth Chen",
-    type: "Monthly Fee",
-    amount: 4500,
-    status: "Paid",
-    date: "2024-01-13",
-  },
-  {
-    id: 4,
-    resident: "Robert Thompson",
-    type: "Additional Care",
-    amount: 1200,
-    status: "Overdue",
-    date: "2024-01-10",
-  },
-]
+import { DollarSign, TrendingDown } from "lucide-react"
+import { CustomTitle } from "@/components/ui/CustomTitle"
+import { CommonCard } from "@/components/ui/CustomCard"
+import { CustomTable } from "@/components/ui/CustomTable"
+import { subMonths, format } from "date-fns"
 
 const chartConfig = {
   revenue: {
@@ -63,82 +17,93 @@ const chartConfig = {
   },
 }
 
+const donationColumns = [
+  { header: "Donor Name", accessorKey: "donorId", cell: (d) => d?.donorId?.name || "-" },
+  { header: "Amount", accessorKey: "amount", cell: (d) => `₹ ${d?.amount}` },
+  { header: "Currency", accessorKey: "currency", cell: (d) => `₹ ${d?.currency}` },
+  { header: "Status", accessorKey: "status", cell: (d) => `${d?.status}` },
+  { header: "Payment Method", accessorKey: "paymentMethod", cell: (d) => `${d?.paymentMethod}` },
+  { header: "Date", accessorKey: "createdAt", cell: (d) => new Date(d.createdAt).toLocaleDateString() },
+];
+
 export default function FinancialsPage() {
+  const [donations, setDonations] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [revenueData, setRevenueData] = useState([
+    { month: "Jan", revenue: 0 },
+    { month: "Feb", revenue: 0 },
+    { month: "Mar", revenue: 0 },
+    { month: "Apr", revenue: 0 },
+    { month: "May", revenue: 0 },
+    { month: "Jun", revenue: 0 },
+  ])
+
+  useEffect(() => {
+    async function fetchDonations() {
+      setLoading(true)
+      const res = await fetch("/api/donations")
+      const data = await res.json()
+      setDonations(data.donations || [])
+      setLoading(false)
+
+      const now = new Date()
+      const months = Array.from({ length: 6 }, (_, i) => subMonths(now, 5 - i))
+      const monthLabels = months.map((d) => format(d, "MMM"))
+      const revenueByMonth = months.map((monthDate, idx) => {
+        const month = monthDate.getMonth()
+        const year = monthDate.getFullYear()
+        const revenue = (data.donations || []).reduce((sum, d) => {
+          const date = new Date(d.createdAt)
+          if (date.getMonth() === month && date.getFullYear() === year && d.status === "paid") {
+            return sum + (d.amount || 0)
+          }
+          return sum
+        }, 0)
+        return { month: monthLabels[idx], revenue }
+      })
+      setRevenueData(revenueByMonth)
+    }
+    fetchDonations()
+  }, [])
+
   return (
       <div className="space-y-6">
         {/* Page Header */}
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight text-balance">Financials</h1>
-            <p className="text-muted-foreground mt-2 text-pretty">
-              Track revenue, expenses, and resident billing information
-            </p>
+            <CustomTitle title="Financials" description="Track revenue, expenses, and resident billing information" />
           </div>
           <div className="flex gap-2">
-            <Button variant="outline" size="sm">
-              <Calendar className="size-4" />
-              This Month
-            </Button>
-            <Button size="sm">
-              <Download className="size-4" />
-              Export Data
-            </Button>
+            {/* <GlobalButton size="sm" title="Export Data" icon={<Download className="size-4" />} /> */}
           </div>
         </div>
 
         {/* Stats Cards */}
         <div className="grid gap-4 md:grid-cols-4">
-          <Card>
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <CardDescription>Total Revenue</CardDescription>
-                <DollarSign className="size-4 text-muted-foreground" />
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">$155,000</div>
-              <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
-                <TrendingUp className="size-3 text-chart-2" />
-                <span className="text-chart-2 font-medium">+12.3%</span> from last month
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-3">
-              <CardDescription>Pending Payments</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">$12,450</div>
-              <p className="text-xs text-muted-foreground mt-1">8 transactions</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-3">
-              <CardDescription>Overdue Payments</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">$3,200</div>
-              <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
-                <TrendingDown className="size-3 text-accent" />
-                <span className="text-accent font-medium">-28%</span> from last month
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-3">
-              <CardDescription>Collection Rate</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">97.9%</div>
-              <p className="text-xs text-muted-foreground mt-1">Excellent performance</p>
-            </CardContent>
-          </Card>
+          <CommonCard
+            title="Total Donation"
+            icon={<DollarSign className="size-4 text-muted-foreground" />}
+            value={`₹ ${donations.filter(d => d.status === "paid").reduce((sum, d) => sum + (d.amount || 0), 0).toLocaleString()}`}
+            // description={<span className="flex items-center gap-1"><TrendingUp className="size-3 text-chart-2" /><span className="text-chart-2 font-medium">{donations.length > 1 ? `+${(((donations.filter(d => d.status === "paid" && new Date(d.createdAt) >= subMonths(new Date(), 1)).reduce((sum, d) => sum + (d.amount || 0), 0)) / Math.max(1, donations.filter(d => d.status === "paid" && new Date(d.createdAt) < subMonths(new Date(), 1)).reduce((sum, d) => sum + (d.amount || 0), 0)) - 1) * 100).toFixed(1)}%` : '+0%'} </span> from last month</span>}
+          />
+          <CommonCard
+            title="Total Donar"
+            value={donations.filter(d => d.status === "paid").map(d => d.donorId?._id).filter((v, i, a) => v && a.indexOf(v) === i).length}
+            // description={<span>{donations.filter(d => d.status === "paid").length} transactions</span>}
+          />
+          <CommonCard
+            title="Total NGOs collaborated "
+            value="20"
+            icon={<TrendingDown className="size-3 text-accent" />}
+            // description={<span className="flex items-center gap-1"><TrendingDown className="size-3 text-accent" /><span className="text-accent font-medium">-28%</span> from last month</span>}
+          />
+          <CommonCard
+            title="Collection Rate"
+            value="25.4%"
+            // description={<span>Excellent performance</span>}
+          />
         </div>
 
-        {/* Revenue Chart */}
         <Card>
           <CardHeader>
             <CardTitle>Revenue Overview</CardTitle>
@@ -151,8 +116,8 @@ export default function FinancialsPage() {
                 <XAxis dataKey="month" className="text-xs" />
                 <YAxis className="text-xs" />
                 <ChartTooltip
-                  content={<ChartTooltipContent />}
-                  formatter={(value) => `$${Number(value).toLocaleString()}`}
+                  content={<ChartTooltipContent className="bg-primary text-primary-foreground border-none shadow-lg" />}
+                  formatter={(value) => `₹ ${Number(value).toLocaleString()}`}
                 />
                 <Bar dataKey="revenue" fill="var(--color-revenue)" radius={[4, 4, 0, 0]} />
               </BarChart>
@@ -160,77 +125,32 @@ export default function FinancialsPage() {
           </CardContent>
         </Card>
 
-        {/* Transactions Table */}
+  
+
         <Card>
           <CardHeader>
-            <CardTitle>Recent Transactions</CardTitle>
-            <CardDescription>View and manage billing transactions</CardDescription>
+            <CardTitle>All Donations</CardTitle>
+            <CardDescription>List of all donations</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            {/* Filter Bar */}
-            <div className="flex flex-col gap-2 md:flex-row md:items-center md:gap-4">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-                <Input placeholder="Search transactions..." className="pl-9" />
-              </div>
-              <div className="flex gap-2">
-                <Select defaultValue="all">
-                  <SelectTrigger className="w-[140px]">
-                    <Filter className="size-4" />
-                    <SelectValue placeholder="Status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Status</SelectItem>
-                    <SelectItem value="paid">Paid</SelectItem>
-                    <SelectItem value="pending">Pending</SelectItem>
-                    <SelectItem value="overdue">Overdue</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            {/* Transactions Table */}
-            <div className="rounded-md border">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Resident</TableHead>
-                    <TableHead className="hidden md:table-cell">Type</TableHead>
-                    <TableHead>Amount</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="hidden sm:table-cell">Date</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {transactions.map((transaction) => (
-                    <TableRow key={transaction.id}>
-                      <TableCell>
-                        <div>
-                          <div className="font-medium">{transaction.resident}</div>
-                          <div className="text-xs text-muted-foreground md:hidden">{transaction.type}</div>
-                        </div>
-                      </TableCell>
-                      <TableCell className="hidden md:table-cell">{transaction.type}</TableCell>
-                      <TableCell className="font-medium">${transaction.amount.toLocaleString()}</TableCell>
-                      <TableCell>
-                        <Badge
-                          variant={
-                            transaction.status === "Paid"
-                              ? "default"
-                              : transaction.status === "Pending"
-                                ? "outline"
-                                : "destructive"
-                          }
-                        >
-                          {transaction.status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="hidden sm:table-cell text-muted-foreground">{transaction.date}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
+            <CustomTable
+              data={donations}
+              columns={donationColumns}
+              searchKey="donorId"
+              searchPlaceholder="Search by donor name..."
+              filters={[
+                {
+                  key: "status",
+                  title: "Status",
+                  options: [
+                    { label: "Paid", value: "paid" },
+                    { label: "Created", value: "created" },
+                    { label: "Failed", value: "failed" },
+                  ],
+                },
+              ]}
+            />
+            {loading && <div className="text-center text-muted-foreground">Loading donations...</div>}
           </CardContent>
         </Card>
       </div>

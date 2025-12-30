@@ -30,6 +30,7 @@ import {
 import { CustomTable, type Column } from "@/components/ui/CustomTable"
 import { CommonCard } from "../../../components/ui/CustomCard"
 import Link from "next/link"
+import { CustomGridView } from "@/components/ui/CustomGridView"
 
 // Foundation work type matching API response
 type FoundationWork = {
@@ -309,25 +310,71 @@ export default function FoundationWorkPage() {
                 <div className="text-muted-foreground">Loading foundation works...</div>
               </div>
             ) : (
-              <CustomTable
+              <CustomGridView 
                 data={foundationWorks}
-                columns={columns}
                 searchKey="title"
-                searchPlaceholder="Search initiatives..."
-                filters={[
-                  {
-                    key: "status",
-                    title: "Status",
-                    options: [
-                      { label: "Active", value: "Active" },
-                      { label: "Planning", value: "Planning" },
-                      { label: "Completed", value: "Completed" },
-                      { label: "On Hold", value: "On Hold" },
-                    ],
-                  },
-                ]}
+                renderCard={(work) => (
+                  <Card key={work._id} className="overflow-hidden">
+                    <CardHeader>
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <CardTitle className="text-lg">{work.title}</CardTitle>
+                          <CardDescription className="mt-2 line-clamp-2">{work.description}</CardDescription>
+                        </div>
+                        <Badge variant={getStatusColor(work.status)}>{work.status}</Badge>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div className="flex items-center gap-2">
+                          <Calendar className="size-4 text-muted-foreground" />
+                          <span>{new Date(work.startDate).toLocaleDateString()}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Clock className="size-4 text-muted-foreground" />
+                          <span>{work.startTime} - {work.endTime}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Users className="size-4 text-muted-foreground" />
+                          <span>{work.beneficiaries} beneficiaries</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <TrendingUp className="size-4 text-muted-foreground" />
+                          <span>₹{work.budget.toLocaleString()}</span>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between pt-4 border-t">
+                        <Badge variant="outline">{work.category}</Badge>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon">
+                              <MoreVertical className="size-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem>
+                              <Eye className="mr-2 size-4" />
+                              View Details
+                            </DropdownMenuItem>
+                            <DropdownMenuItem>
+                              <Edit2 className="mr-2 size-4" />
+                              Edit
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem className="text-destructive">
+                              <Trash2 className="mr-2 size-4" />
+                              Delete
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
               />
-              // <h1>hello</h1>
+              
             )}
           </CardContent>
         </Card>
