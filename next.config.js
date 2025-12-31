@@ -1,3 +1,6 @@
+// To force Webpack (not Turbopack) on Next.js 13+ and Railway, use the --webpack flag in your scripts.
+// Example: "dev": "next dev --webpack", "build": "next build --webpack", "start": "next start --webpack"
+
 const withPWA = require("next-pwa")({
   dest: "public",
   register: true,
@@ -15,9 +18,6 @@ const nextConfig = {
   },
 
 
-  experimental: {
-    turbo: false,
-  },
 
   images: {
     unoptimized: true,
