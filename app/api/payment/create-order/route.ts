@@ -3,6 +3,7 @@ import Donor from "@/models/Donor";
 import Donation from "@/models/Donation";
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
+import { emitNotification } from "@/lib/notifications/emit";
 
 export async function POST(req: Request) {
 
@@ -53,6 +54,11 @@ export async function POST(req: Request) {
     razorpayOrderId: order.id,
     amount,
     status: "created",
+  });
+
+    await emitNotification("DONATION_SUCCESS", {
+    userId: user._id,
+    amount,
   });
   return NextResponse.json({...order, amount:amount, name:name, mobile:mobile});
 
