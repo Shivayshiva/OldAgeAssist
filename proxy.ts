@@ -11,7 +11,7 @@ const protectedPaths = [
 
 const publicPaths = ["/login", "/register", "/volunteerRegister", "/verify-email", "/volunteerOnboarding"]
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const token = await getToken({ req: request })
   const { pathname } = request.nextUrl
 
