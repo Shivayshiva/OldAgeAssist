@@ -3,7 +3,6 @@ import mongoose from "mongoose"
 const MemberSchema = new mongoose.Schema(
   {
     auth: {
-      provider: {
         type: String,
         enum: ["credentials", "google", "email"],
         required: true
@@ -16,6 +15,7 @@ const MemberSchema = new mongoose.Schema(
       },
 
       email: {
+      googleId: {
         type: String,
         required: true,
         lowercase: true,

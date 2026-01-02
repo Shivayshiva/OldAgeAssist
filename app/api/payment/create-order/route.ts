@@ -56,10 +56,10 @@ export async function POST(req: Request) {
     status: "created",
   });
 
-    await emitNotification("DONATION_SUCCESS", {
-    userId: user._id,
-    amount,
-  });
+  //   await emitNotification("DONATION_SUCCESS", {
+  //   userId: user._id,
+  //   amount,
+  // });
   return NextResponse.json({...order, amount:amount, name:name, mobile:mobile});
 
   }catch(error){
