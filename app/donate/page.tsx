@@ -1,5 +1,6 @@
 
 "use client"
+
 import { useState } from "react"
 import { motion } from "framer-motion"
 import { useForm } from "react-hook-form"
@@ -36,6 +37,15 @@ const formSchema = z.object({
 
 export default function DonatePage() {
   const router = useRouter();
+
+  // Debugging: Check which component is undefined
+  // Look at your terminal output to see which one is "undefined"
+  console.log("Checking imports:", {
+    Button, Card, Input, Label, Textarea, 
+    Form, FormControl, FormField, FormItem, FormLabel, FormMessage,
+    Heart, ArrowLeft, Check, motion
+  });
+
   const [selectedAmount, setSelectedAmount] = useState<number | null>(null)
   const [customAmount, setCustomAmount] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
