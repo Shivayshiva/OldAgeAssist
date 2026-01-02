@@ -8,6 +8,13 @@ import { Providers } from "@/providers"
 const _geist = Geist({ subsets: ["latin"] })
 const _geistMono = Geist_Mono({ subsets: ["latin"] })
 
+export const  viewport = {
+    width: "device-width",
+    initialScale: 1,
+    maximumScale: 1,
+    userScalable: true,
+  },
+
 export const metadata: Metadata = {
   title: {
     default: "Sirsa Foundation - Empowering Elderly Lives",
@@ -29,12 +36,6 @@ export const metadata: Metadata = {
   authors: [{ name: "Sirsa Foundation", url: "https://old-age-assist.vercel.app" }],
   creator: "Sirsa Foundation",
   publisher: "Sirsa Foundation",
-  viewport: {
-    width: "device-width",
-    initialScale: 1,
-    maximumScale: 1,
-    userScalable: true,
-  },
   icons: {
     icon: [
       { url: "/Favicon32.png", media: "(prefers-color-scheme: light)" },
