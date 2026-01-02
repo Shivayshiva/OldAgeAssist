@@ -3,9 +3,9 @@ import { Redis } from "ioredis";
 
 let redis: Redis | undefined;
 
-if (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN) {
+if (process.env.REDIS_URL && process.env.UPSTASH_REDIS_REST_TOKEN) {
   // Upstash connection
-  redis = new Redis(process.env.UPSTASH_REDIS_REST_URL, {
+  redis = new Redis(process.env.REDIS_URL, {
     password: process.env.UPSTASH_REDIS_REST_TOKEN,
     maxRetriesPerRequest: null,
   });
