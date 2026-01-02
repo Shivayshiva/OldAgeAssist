@@ -1,12 +1,5 @@
-export const viewport = {
-  width: 'device-width',
-  initialScale: 1,
-  maximumScale: 1,
-  userScalable: true,
-}
-"use client"
 
-import React from "react"
+"use client"
 
 import { useState } from "react"
 import { motion } from "framer-motion"
@@ -43,7 +36,7 @@ const formSchema = z.object({
 })
 
 export default function DonatePage() {
-  const router = useRouter()
+  const router = useRouter();
   const [selectedAmount, setSelectedAmount] = useState<number | null>(null)
   const [customAmount, setCustomAmount] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)

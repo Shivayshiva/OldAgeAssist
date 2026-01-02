@@ -1,9 +1,4 @@
-export const viewport = {
-  width: 'device-width',
-  initialScale: 1,
-  maximumScale: 1,
-  userScalable: true,
-}
+
 "use client"
 
 import { useState } from "react"
@@ -21,6 +16,8 @@ import { CustomSelectField } from "@/components/ui/CustomSelectField"
 import { CustomInputField } from "@/components/ui/CustomInputField"
 import { CustomTimeField } from "@/components/ui/CustomTimeField"
 import { uploadToImageKit } from "@/lib/commonFunction"
+
+
 
 export default function CreateFoundationWorkPage() {
   const router = useRouter()

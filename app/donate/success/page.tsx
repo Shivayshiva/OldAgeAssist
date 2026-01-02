@@ -1,9 +1,4 @@
-export const viewport = {
-  width: 'device-width',
-  initialScale: 1,
-  maximumScale: 1,
-  userScalable: true,
-}
+
 "use client"
 
 import { motion } from "framer-motion"
