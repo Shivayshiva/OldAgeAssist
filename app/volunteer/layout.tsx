@@ -4,11 +4,11 @@ import type React from "react"
 export const metadata: Metadata = {
   title: "Volunteer - Sirsa Foundation",
   description: "Join volunteer opportunities and make an impact in your community",
-  viewport: {
-    width: "device-width",
-    initialScale: 1,
-    maximumScale: 1,
-  },
+  // viewport: {
+  //   width: "device-width",
+  //   initialScale: 1,
+  //   maximumScale: 1,
+  // },
   icons: {
     icon: [
       {

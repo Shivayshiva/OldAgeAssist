@@ -5,12 +5,12 @@ import { SuperAdminLayout } from "@/components/super-admin-layout"
 export const metadata: Metadata = {
   title: "Super Admin - Sirsa Foundation",
   description: "Super Admin Dashboard for managing the Sirsa Foundation platform",
-  viewport: {
-    width: "device-width",
-    initialScale: 1,
-    maximumScale: 1,
-    userScalable: true,
-  },
+  // viewport: {
+  //   width: "device-width",
+  //   initialScale: 1,
+  //   maximumScale: 1,
+  //   userScalable: true,
+  // },
   icons: {
     icon: [
       {
