@@ -29,8 +29,8 @@ export function SuperadminSidebarMenuitem() {
 
   return (
     <SidebarMenu className="mt-5 pl-4 max-w-fit">
-      {navigation?.map((item)=>( 
-        <SidebarMenuItem key={item?.name}>
+      {navigation?.map((item, idx) => (
+        <SidebarMenuItem key={item?.name || idx}>
           <SidebarMenuButton
             asChild
             isActive={pathname === item.href}

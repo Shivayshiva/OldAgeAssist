@@ -1,5 +1,13 @@
+
 import { Redis } from "ioredis";
 
-export const pub = new Redis(process.env.UPSTASH_REDIS_REST_URL!);
-export const sub = new Redis(process.env.UPSTASH_REDIS_REST_URL!);
+const url = process.env.UPSTASH_REDIS_REST_URL;
+const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+
+export const pub = url && token
+	? new Redis(url, { password: token })
+	: undefined;
+export const sub = url && token
+	? new Redis(url, { password: token })
+	: undefined;
 
