@@ -76,20 +76,17 @@ const MemberSchema = new mongoose.Schema(
         }],
         timeSlots: [{
           type: String 
-        }]
-      },
-
-      volunteerStatus: {
-        type: String,
-        enum: [
-          "new",
-          "onboarding_pending",
-          "pending_verification",
-          "verified",
-          "active",
-          "blocked"
-        ],
-        default: "new"
+        }],
+        googleId: {
+          type: String,
+          sparse: true
+        },
+        email: {
+          type: String,
+          required: true,
+          lowercase: true,
+          trim: true
+        },
       }
     },
 
