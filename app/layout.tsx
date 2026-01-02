@@ -8,12 +8,12 @@ import { Providers } from "@/providers"
 const _geist = Geist({ subsets: ["latin"] })
 const _geistMono = Geist_Mono({ subsets: ["latin"] })
 
-export const  viewport = {
-    width: "device-width",
-    initialScale: 1,
-    maximumScale: 1,
-    userScalable: true,
-  },
+// export const  viewport = {
+//     width: "device-width",
+//     initialScale: 1,
+//     maximumScale: 1,
+//     userScalable: true,
+//   },
 
 export const metadata: Metadata = {
   title: {
