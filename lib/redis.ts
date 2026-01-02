@@ -1,12 +1,23 @@
 
 import { Redis } from "ioredis";
 
-const url = process.env.UPSTASH_REDIS_REST_URL;
-const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+let redis: Redis | undefined;
 
-export const redis = url && token
-  ? new Redis(url, {
-      password: token,
-      maxRetriesPerRequest: null,
-    })
-  : undefined;
+if (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN) {
+  // Upstash connection
+  redis = new Redis(process.env.UPSTASH_REDIS_REST_URL, {
+    password: process.env.UPSTASH_REDIS_REST_TOKEN,
+    maxRetriesPerRequest: null,
+  });
+} else if (process.env.REDIS_HOST && process.env.REDIS_PORT) {
+  // Local Redis connection
+  redis = new Redis({
+    host: process.env.REDIS_HOST,
+    port: Number(process.env.REDIS_PORT),
+    password: process.env.REDIS_PASSWORD, // optional
+  });
+} else {
+  redis = undefined;
+}
+
+export { redis };
